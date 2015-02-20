@@ -1,0 +1,65 @@
+plugins {
+	id 'java'
+	id 'eclipse'
+	id 'idea'
+	id 'application'
+	
+	id 'com.github.hierynomus.license' version '0.11.0'
+	id 'com.stehno.natives' version '0.2.1'
+}
+
+repositories {
+	mavenCentral()
+	maven {
+		name  "gameminers"
+		url "http://mvn.gameminers.com/artifactory/repo"
+	}
+}
+
+defaultTasks 'licenseFormat', 'distZip'
+
+dependencies {
+	compile 'org.slick2d:slick2d-core:1.0.1'
+	compile 'com.google.code.gson:gson:2.3.1'
+	compile 'org.lwjgl.lwjgl:lwjgl:2.9.3'
+	compile 'org.lwjgl.lwjgl:lwjgl_util:2.9.3'
+}
+
+natives {
+	jars = configurations.compile.collectMany {
+		it.name.contains('natives') ? [it.name] : []
+	}
+}
+
+run {
+	dependsOn unpackNatives
+	systemProperty 'java.library.path', file('build/natives/' + com.stehno.gradle.natives.Platform.current().os)
+}
+
+startScripts {
+	defaultJvmOpts = [ '-Djava.library.path=../lib/natives/' ]
+	classpath = classpath.filter {
+	!it.name.contains('natives')
+}
+
+}
+applicationDistribution.from(unpackNatives) {
+	from fileTree('build/natives').files
+	into 'lib/natives'
+}
+applicationDistribution.exclude {
+	it.name.contains('natives') && it.name.endsWith('.jar')
+}
+
+license {
+	header file('HEADER')
+	exclude '*.png'
+	sourceSets = project.sourceSets
+	ignoreFailures false
+	strictCheck true
+	mapping {
+		java = 'SLASHSTAR_STYLE'
+	}
+}
+
+mainClassName = "com.gameminers.mav.Mav"
