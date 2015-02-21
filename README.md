@@ -27,8 +27,8 @@ Compiling
 =========
 Linux
 -----
-Run `./gradlew`. A zip will be created in build/dist that contains all files needed to run Mav.
+Run `./gradlew`. A zip will be created in build/distributions that contains all files needed to run Mav.
 
 Windows
 -------
-Run `gradlew`. A zip will be created in build/dist that contains all files needed to run Mav.
+Run `gradlew`. A zip will be created in build/distributions that contains all files needed to run Mav.

@@ -13,14 +13,11 @@
  * You should have received a copy of the GNU Lesser General Public License along
  * with Mav. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.gameminers.mav;
+package com.gameminers.mav.personality;
 
-import org.newdawn.slick.TrueTypeFont;
+public interface Personality {
 
-public abstract class Screen {
-	public static TrueTypeFont[] lightFont;
-	public static TrueTypeFont[] baseFont;
-	
-	public abstract void render();
+	void renderForeground(float diameter);
+	void renderBackground();
 
 }

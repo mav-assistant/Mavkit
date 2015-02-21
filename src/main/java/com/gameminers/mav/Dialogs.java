@@ -15,8 +15,15 @@
  */
 package com.gameminers.mav;
 
-public abstract class Personality {
+import java.awt.Component;
 
-	public abstract void renderFace(float diameter);
+import javax.swing.JOptionPane;
+
+public class Dialogs {
+
+	public static void showErrorDialog(Component parent, String message, Throwable t) {
+		t.printStackTrace();
+		JOptionPane.showMessageDialog(parent, message+"\n"+t.toString()+"\n\nSee the console for more details.", "Error", JOptionPane.ERROR_MESSAGE, null);
+	}
 
 }

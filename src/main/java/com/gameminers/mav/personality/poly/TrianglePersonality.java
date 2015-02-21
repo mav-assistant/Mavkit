@@ -13,31 +13,23 @@
  * You should have received a copy of the GNU Lesser General Public License along
  * with Mav. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.gameminers.mav;
+package com.gameminers.mav.personality.poly;
 
 import org.lwjgl.opengl.GL11;
 
-public class TrianglePersonality extends Personality {
-	private long frameCount;
-	private float angle;
-	
-	public float targetAngle;
-	public float targetPulse;
+import com.gameminers.mav.personality.Personality;
+import com.gameminers.mav.render.Rendering;
+
+public class TrianglePersonality extends PolygonPersonality {
+	public TrianglePersonality() {
+		super(3);
+	}
 	@Override
-	public void renderFace(float diameter) {
+	public void renderForeground(float diameter) {
+		setup();
 		float radius = diameter/2f;
-		frameCount++;
-		float pulse;
-		if (Mav.idle) {
-			angle = (angle+0.05f)%360;
-			pulse = (float)(Math.sin(frameCount/30f)+1)/2f;
-		} else {
-			angle = Mav.tend(angle, targetAngle, 8f);
-			pulse = targetPulse;
-		}
-		GL11.glRotatef(angle, 0f, 0f, 1f);
-		float[] bg = Mav.getColor(0.3f);
-		float[] fg = Mav.getColor(0.8f);
+		float[] bg = Rendering.getColor(0.3f);
+		float[] fg = Rendering.getColor(0.8f);
 		Rendering.drawTriangle(0, 0, radius*(0.85f+(float)((pulse)*0.15f)), fg[0], fg[1], fg[2], 0.5f, 0);
 		Rendering.drawTriangle(0, 0, radius*0.8f, fg[0], fg[1], fg[2], 1, 0.5f);
 		Rendering.drawTriangle(0, 0, radius*0.7f, bg[0], bg[1], bg[2], 1, 1f);
