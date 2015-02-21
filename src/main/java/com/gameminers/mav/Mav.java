@@ -44,17 +44,27 @@ public class Mav {
 
 	public static Screen currentScreen = new MainScreen();
 	private static boolean run = true;
+	private static boolean render = true;
 
 	public static final PersonalityRenderer personalityRenderer = new PersonalityRenderer();
 	
 	public static Personality personality = new TrianglePersonality();
 
 	public static long totalFrameCounter = 0;
+	private static int fadeFrames = 0;
+	private static int stopFrames = 0;
 	
 	public static VoiceThread voiceThread;
 
 	public static void stop() {
-		Display.destroy();
+		RenderState.targetSat = 0;
+		RenderState.targetLum = 0.3f;
+		RenderState.text = "\u00A7LGoodbye.";
+		RenderState.idle = false;
+		if (personality instanceof PolygonPersonality) {
+			((PolygonPersonality)personality).targetAngle = 0;
+			((PolygonPersonality)personality).targetPulse = 0;
+		}
 		if (voiceThread != null) {
 			voiceThread.interrupt();
 		}
@@ -78,11 +88,9 @@ public class Mav {
 			new FirstRunThread().start();
 			/*voiceThread = new VoiceThread();
 			voiceThread.start();*/
-			while (run) {
+			while (render) {
 				Rendering.beforeFrame();
-				
-				RenderState.lagHue = Rendering.tend(RenderState.lagHue, RenderState.targetHue, 16f);
-				RenderState.lagSat = Rendering.tend(RenderState.lagSat, RenderState.targetSat, 16f);
+				RenderState.update();
 				doRender();
 				
 				totalFrameCounter++;
@@ -96,6 +104,15 @@ public class Mav {
 				Display.sync(TARGET_FPS);
 				if (Display.isCloseRequested()) {
 					stop();
+				}
+				if (!run) {
+					stopFrames++;
+					if (stopFrames >= 40) {
+						fadeFrames++;
+						if (fadeFrames >= FADE_TIME+10) {
+							render = false;
+						}
+					}
 				}
 			}
 		} catch (Throwable t) {
@@ -116,8 +133,9 @@ public class Mav {
 			Screen.baseFont[0].drawString(8, 24, ((PolygonPersonality)personality).angle+"°");
 		}
 		if (totalFrameCounter < FADE_TIME) {
-			Rendering.drawRectangle(0, 0, Display.getWidth(), Display.getHeight(), 0, 0, 0, 1.0f-(totalFrameCounter/FADE_TIME), 1);
+			fadeFrames = (int) (FADE_TIME-totalFrameCounter);
 		}
+		Rendering.drawRectangle(0, 0, Display.getWidth(), Display.getHeight(), 0, 0, 0, (fadeFrames/FADE_TIME), 1);
 		GL11.glPopMatrix();
 	}
 
