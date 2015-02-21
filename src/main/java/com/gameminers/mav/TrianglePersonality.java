@@ -22,8 +22,8 @@ public class TrianglePersonality extends Personality {
 	@Override
 	public void renderFace() {
 		frameCount++;
-		GL11.glRotatef((frameCount/5f)%360, 0f, 0f, 1f);
-		Rendering.drawTriangle(0, 0, 55, 0, 0.4f, 0, 1, 0);
+		GL11.glRotatef((frameCount/20f)%360, 0f, 0f, 1f);
+		Rendering.drawTriangle(0, 0, 50+((float)((Math.sin(frameCount/30f)+1)*2.5f)), 0, 0.4f, 0, 1, 0);
 		Rendering.drawTriangle(0, 0, 45, 0, 0.8f, 0, 1, 0.5f);
 		Rendering.drawTriangle(0, 0, 40, 0, 0.3f, 0, 1, 1f);
 	}

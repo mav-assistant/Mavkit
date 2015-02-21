@@ -31,7 +31,7 @@ public class Rendering {
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glPopMatrix();
 	}
-	public static void drawTriangle(float x, float y, int radius, float r, float g, float b, float a, float z) {
+	public static void drawTriangle(float x, float y, float radius, float r, float g, float b, float a, float z) {
 		GL11.glPushMatrix();
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			GL11.glTranslatef(x, y, z);
