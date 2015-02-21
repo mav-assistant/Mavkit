@@ -3,7 +3,7 @@ Mav
 **Modular Assistant (Voice)**
 
 Mav is a personal assistant, similar to Google Now, Microsoft Cortana, Apple's Siri, and ILA.
-It is written in Java 7, and uses FreeTTS and Sphinx-4 by default, but can be configured to use Google's cloud APIs.
+It is written in Java 7, and uses MARY and Sphinx-4 by default, but can be configured to use Google's cloud APIs.
 
 It is heavily inspired by ILA, but is designed to be fully modular and customizable, and open-source from the start.
 
