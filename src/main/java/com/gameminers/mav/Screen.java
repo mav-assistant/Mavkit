@@ -18,8 +18,8 @@ package com.gameminers.mav;
 import org.newdawn.slick.TrueTypeFont;
 
 public abstract class Screen {
-	public static TrueTypeFont lightFont;
-	public static TrueTypeFont baseFont;
+	public static TrueTypeFont[] lightFont;
+	public static TrueTypeFont[] baseFont;
 	
 	public abstract void render();
 

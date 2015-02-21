@@ -37,6 +37,7 @@ public class Mav {
 	public static final int TARGET_FPS = 30;
 
 	private static int frameCounter = 0;
+	private static int fps = 0;
 	private static long lastFPSUpdate = System.currentTimeMillis();
 
 	public static Screen currentScreen = new MainScreen();
@@ -46,6 +47,9 @@ public class Mav {
 
 	public static float targetHue = 120;
 	public static float lagHue = 120;
+	
+	public static float targetSat = 1.0f;
+	public static float lagSat = 1.0f;
 
 	public static boolean idle = true;
 	
@@ -79,14 +83,24 @@ public class Mav {
 			InputStream baseIn = ClassLoader.getSystemResourceAsStream("resources/fonts/OpenSans-Regular.ttf");
 			InputStream lightIn = ClassLoader.getSystemResourceAsStream("resources/fonts/OpenSans-Light.ttf");
 
-			Font baseFont = Font.createFont(Font.TRUETYPE_FONT, baseIn).deriveFont(24.0f);
-			Font lightFont = Font.createFont(Font.TRUETYPE_FONT, lightIn).deriveFont(24.0f);
+			Font baseFont = Font.createFont(Font.TRUETYPE_FONT, baseIn);
+			Font lightFont = Font.createFont(Font.TRUETYPE_FONT, lightIn);
 
 			baseIn.close();
 			lightIn.close();
 			
-			Screen.baseFont = new TrueTypeFont(baseFont, true);
-			Screen.lightFont = new TrueTypeFont(lightFont, true);
+			Screen.baseFont = new TrueTypeFont[] {
+					new TrueTypeFont(baseFont.deriveFont(12.0f), true),
+					new TrueTypeFont(baseFont.deriveFont(24.0f), true),
+					new TrueTypeFont(baseFont.deriveFont(36.0f), true),
+					new TrueTypeFont(baseFont.deriveFont(48.0f), true),
+			};
+			Screen.lightFont = new TrueTypeFont[] {
+					new TrueTypeFont(lightFont.deriveFont(12.0f), true),
+					new TrueTypeFont(lightFont.deriveFont(24.0f), true),
+					new TrueTypeFont(lightFont.deriveFont(36.0f), true),
+					new TrueTypeFont(lightFont.deriveFont(48.0f), true),
+			};
 		} catch (Throwable t) {
 			showErrorDialog(null, "An error occurred while initializing assets. Mav will now exit.", t);
 		}
@@ -101,6 +115,7 @@ public class Mav {
 			
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			text = "\u00A7LHi! I'm Mav.\nI don't know who you are yet,\nso let's fix that.\n\n\u00A7sSay 'Hey, Mav' to get started.";
 			while (run) {
 				GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
 				GL11.glMatrixMode(GL11.GL_MODELVIEW);
@@ -111,25 +126,15 @@ public class Mav {
 				GL11.glMatrixMode(GL11.GL_MODELVIEW);
 				
 				lagHue = tend(lagHue, targetHue, 16f);
+				lagSat = tend(lagSat, targetSat, 16f);
 				doRender();
 				
 				totalFrameCounter++;
 				frameCounter++;
 				if (System.currentTimeMillis()-lastFPSUpdate >= 1000) {
-					System.out.println(frameCounter+" FPS");
+					fps = frameCounter;
 					frameCounter = 0;
 					lastFPSUpdate = System.currentTimeMillis();
-				}
-				if (totalFrameCounter > 400) {
-					idle = true;
-					text = "What were we doing, again?";
-					targetHue = 210;
-				} else if (totalFrameCounter > 150) {
-					idle = false;
-					((TrianglePersonality)personality).targetPulse = 3.0f;
-					((TrianglePersonality)personality).targetAngle = 360f;
-					text = "I'm sorry, Dave.\nI can't let you do that.";
-					targetHue = 0;
 				}
 				Display.update();
 				Display.sync(TARGET_FPS);
@@ -143,6 +148,10 @@ public class Mav {
 	}
 
 	private static void doRender() {
+		/*((TrianglePersonality)personality).targetPulse = 0f;
+		targetSat = 0f;
+		idle = false;
+		text = "\u00A7LListening paused.";*/
 		float[] rgb = getColor(0.3f);
 		GL11.glClearColor(rgb[0], rgb[1], rgb[2], 1);
 		
@@ -153,9 +162,10 @@ public class Mav {
 			currentScreen.render();
 			GL11.glPopMatrix();
 		} else {
-			Screen.baseFont.drawString(4, 30, "There's no screen being displayed.", Color.white);
-			Screen.lightFont.drawString(4, 60, "This shouldn't happen.", Color.white);
+			Screen.baseFont[1].drawString(4, 30, "There's no screen being displayed.", Color.white);
+			Screen.lightFont[1].drawString(4, 60, "This shouldn't happen.", Color.white);
 		}
+		Screen.baseFont[0].drawString(8, 8, fps+" FPS");
 		GL11.glPopMatrix();
 	}
 
@@ -165,7 +175,7 @@ public class Mav {
 	}
 	
 	public static float[] getColor(float lum) {
-		return new java.awt.Color(java.awt.Color.HSBtoRGB(lagHue/360f, 1.0f, lum)).getComponents(null);
+		return new java.awt.Color(java.awt.Color.HSBtoRGB(lagHue/360f, lagSat, lum)).getComponents(null);
 	}
 
 	public static float tend(float a, float b, float c) {
