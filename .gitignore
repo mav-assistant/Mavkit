@@ -52,3 +52,6 @@ local.properties
 
 # KDE directory preferences
 .directory
+
+/log
+
