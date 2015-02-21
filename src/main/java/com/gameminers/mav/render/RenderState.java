@@ -15,6 +15,8 @@
  */
 package com.gameminers.mav.render;
 
+import java.awt.Color;
+
 public class RenderState {
 
 	public static float targetHue = 120;
@@ -23,5 +25,8 @@ public class RenderState {
 	public static float lagSat = 1.0f;
 	public static boolean idle = true;
 	public static String text = "What can I do for you?";
+	public static float[] getColor(float lum) {
+		return new Color(Color.HSBtoRGB(lagHue/360f, lagSat, lum)).getComponents(null);
+	}
 
 }

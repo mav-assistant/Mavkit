@@ -36,6 +36,7 @@ public class Rendering {
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glPopMatrix();
 	}
+	
 	public static void drawTriangle(float x, float y, float radius, float r, float g, float b, float a, float z) {
 		GL11.glPushMatrix();
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -45,6 +46,21 @@ public class Rendering {
 			for (int i = 0; i < 3; ++i) {
 				GL11.glVertex2d(Math.sin(i / ((double) 3) * 2 * Math.PI) * (radius), Math.cos(i / 3D * 2 * Math.PI) * (radius));
 			}
+			GL11.glEnd();
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glPopMatrix();
+	}
+	
+	public static void drawRectangle(float x, float y, float width, float height, float r, float g, float b, float a, float z) {
+		GL11.glPushMatrix();
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			GL11.glTranslatef(0, 0, z);
+			GL11.glColor4f(r, g, b, a);
+			GL11.glBegin(GL11.GL_QUADS);
+				GL11.glVertex2f(x, y);
+				GL11.glVertex2f(x+width, y);
+				GL11.glVertex2f(x+width, y+height);
+				GL11.glVertex2f(x, y+height);
 			GL11.glEnd();
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glPopMatrix();
@@ -80,12 +96,8 @@ public class Rendering {
 
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, Display.getWidth(), Display.getHeight(), 0, 1, -1);
+		GL11.glOrtho(0, Display.getWidth(), Display.getHeight(), 0, 10, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-	}
-	
-	public static float[] getColor(float lum) {
-		return new java.awt.Color(java.awt.Color.HSBtoRGB(RenderState.lagHue/360f, RenderState.lagSat, lum)).getComponents(null);
 	}
 	
 	public static float tend(float a, float b, float c) {

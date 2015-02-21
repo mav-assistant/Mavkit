@@ -34,7 +34,7 @@ public class PolygonPersonality implements Personality {
 	public float targetPulse;
 	@Override
 	public void renderBackground() {
-		float[] rgb = Rendering.getColor(0.3f);
+		float[] rgb = RenderState.getColor(0.3f);
 		GL11.glClearColor(rgb[0], rgb[1], rgb[2], 1);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 	}
@@ -42,8 +42,8 @@ public class PolygonPersonality implements Personality {
 	public void renderForeground(float diameter) {
 		setup();
 		float radius = diameter/2f;
-		float[] bg = Rendering.getColor(0.3f);
-		float[] fg = Rendering.getColor(0.8f);
+		float[] bg = RenderState.getColor(0.3f);
+		float[] fg = RenderState.getColor(0.8f);
 		Rendering.drawPolygon(0, 0, radius*(0.85f+(pulse)*0.15f), fg[0], fg[1], fg[2], 0.5f, sideCount, 0);
 		Rendering.drawPolygon(0, 0, radius*0.8f, fg[0], fg[1], fg[2], 1, sideCount, 0.5f);
 		Rendering.drawPolygon(0, 0, radius*0.7f, bg[0], bg[1], bg[2], 1, sideCount, 1f);

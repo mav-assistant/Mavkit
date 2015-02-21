@@ -24,7 +24,6 @@ import com.gameminers.mav.Mav;
 import com.gameminers.mav.screen.Screen;
 
 public class PersonalityRenderer {
-
 	public void render() {
 		float w = Display.getWidth()/2f;
 		GL11.glPushMatrix();

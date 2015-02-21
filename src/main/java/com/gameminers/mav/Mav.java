@@ -21,7 +21,6 @@ import javax.swing.UIManager;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
-
 import com.gameminers.mav.firstrun.FirstRunThread;
 import com.gameminers.mav.personality.Personality;
 import com.gameminers.mav.personality.poly.PolygonPersonality;
@@ -37,24 +36,28 @@ public class Mav {
 	public static final File configDir = new File(System.getProperty("user.home"), ".mav");
 
 	public static final int TARGET_FPS = 30;
+	public static final float FADE_TIME = 30;
 
 	private static int frameCounter = 0;
 	private static int fps = 0;
 	private static long lastFPSUpdate = System.currentTimeMillis();
 
 	public static Screen currentScreen = new MainScreen();
-	public static final PersonalityRenderer personalityRenderer = new PersonalityRenderer();
 	private static boolean run = true;
 
+	public static final PersonalityRenderer personalityRenderer = new PersonalityRenderer();
+	
 	public static Personality personality = new TrianglePersonality();
 
 	public static long totalFrameCounter = 0;
-
+	
 	public static VoiceThread voiceThread;
 
 	public static void stop() {
 		Display.destroy();
-		voiceThread.interrupt();
+		if (voiceThread != null) {
+			voiceThread.interrupt();
+		}
 		run = false;
 	}
 
@@ -69,6 +72,7 @@ public class Mav {
 		}
 		Rendering.setUpDisplay();
 		Fonts.loadFonts();
+		Screen.initMouse();
 		try {
 			Rendering.setUpGL();
 			new FirstRunThread().start();
@@ -101,7 +105,7 @@ public class Mav {
 
 	private static void doRender() {
 		GL11.glPushMatrix();
-		renderPersonality();
+		personalityRenderer.render();
 		if (currentScreen != null) {
 			GL11.glPushMatrix();
 			currentScreen.render();
@@ -111,11 +115,10 @@ public class Mav {
 		if (personality instanceof PolygonPersonality) {
 			Screen.baseFont[0].drawString(8, 24, ((PolygonPersonality)personality).angle+"°");
 		}
+		if (totalFrameCounter < FADE_TIME) {
+			Rendering.drawRectangle(0, 0, Display.getWidth(), Display.getHeight(), 0, 0, 0, 1.0f-(totalFrameCounter/FADE_TIME), 1);
+		}
 		GL11.glPopMatrix();
-	}
-
-	private static void renderPersonality() {
-		personalityRenderer.render();
 	}
 
 }
