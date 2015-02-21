@@ -15,8 +15,6 @@
  */
 package com.gameminers.mav.render;
 
-import java.awt.Color;
-
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -93,15 +91,13 @@ public class Rendering {
 	public static float tend(float a, float b, float c) {
 		if (a > b) {
 			float diff = (a - b);
-			if (diff < 0.1f) {
+			if (diff < 0.1f)
 				return b;
-			}
 			return a - (diff/c);
 		} else {
 			float diff = (b - a);
-			if (diff < 0.1f) {
+			if (diff < 0.1f)
 				return b;
-			}
 			return a + (diff/c);
 		}
 	}

@@ -44,7 +44,7 @@ public class PolygonPersonality implements Personality {
 		float radius = diameter/2f;
 		float[] bg = Rendering.getColor(0.3f);
 		float[] fg = Rendering.getColor(0.8f);
-		Rendering.drawPolygon(0, 0, radius*(0.85f+(float)((pulse)*0.15f)), fg[0], fg[1], fg[2], 0.5f, sideCount, 0);
+		Rendering.drawPolygon(0, 0, radius*(0.85f+(pulse)*0.15f), fg[0], fg[1], fg[2], 0.5f, sideCount, 0);
 		Rendering.drawPolygon(0, 0, radius*0.8f, fg[0], fg[1], fg[2], 1, sideCount, 0.5f);
 		Rendering.drawPolygon(0, 0, radius*0.7f, bg[0], bg[1], bg[2], 1, sideCount, 1f);
 	}
