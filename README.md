@@ -20,7 +20,6 @@ Goals
 
 Screenshots
 ===========
-![Early test screen of Mav](http://i.imgur.com/zXNAKMY.png)
 ![Waiting](http://i.imgur.com/PSYqrmt.png)
 ![Responding](http://i.imgur.com/r3fC8AF.png)
 
