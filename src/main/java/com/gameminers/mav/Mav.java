@@ -19,8 +19,11 @@ import java.io.File;
 
 import javax.swing.UIManager;
 
+import marytts.exceptions.SynthesisException;
+
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+
 import com.gameminers.mav.firstrun.FirstRunThread;
 import com.gameminers.mav.personality.Personality;
 import com.gameminers.mav.personality.poly.PolygonPersonality;
@@ -31,6 +34,8 @@ import com.gameminers.mav.render.RenderState;
 import com.gameminers.mav.render.Rendering;
 import com.gameminers.mav.screen.MainScreen;
 import com.gameminers.mav.screen.Screen;
+import com.gameminers.mav.tts.TTSInterface;
+import com.gameminers.mav.tts.mary.MaryTTSInterface;
 
 public class Mav {
 	public static final File configDir = new File(System.getProperty("user.home"), ".mav");
@@ -55,6 +60,7 @@ public class Mav {
 	private static int stopFrames = 0;
 	
 	public static VoiceThread voiceThread;
+	public static TTSInterface ttsInterface;
 
 	public static void stop() {
 		RenderState.targetSat = 0;
@@ -64,6 +70,13 @@ public class Mav {
 		if (personality instanceof PolygonPersonality) {
 			((PolygonPersonality)personality).targetAngle = 0;
 			((PolygonPersonality)personality).targetPulse = 0;
+		}
+		if (ttsInterface != null) {
+			try {
+				ttsInterface.say("Goodbye.");
+			} catch (SynthesisException e) {
+				e.printStackTrace();
+			}
 		}
 		if (voiceThread != null) {
 			voiceThread.interrupt();
@@ -80,9 +93,20 @@ public class Mav {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			} catch (Exception ex) {}
 		}
-		Rendering.setUpDisplay();
-		Fonts.loadFonts();
-		Screen.initMouse();
+		try {
+			ttsInterface = new MaryTTSInterface();
+		} catch (Throwable t) {
+			Dialogs.showErrorDialog(null, "An error occurred while initializing MARY. Mav will now exit.", t);
+			return;
+		}
+		try {
+			Rendering.setUpDisplay();
+			Fonts.loadFonts();
+			Screen.initMouse();
+		} catch (Throwable t) {
+			Dialogs.showErrorDialog(null, "An error occurred while setting up the UI. Mav will now exit.", t);
+			return;
+		}
 		try {
 			Rendering.setUpGL();
 			new FirstRunThread().start();

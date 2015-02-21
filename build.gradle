@@ -12,6 +12,10 @@ repositories {
 	mavenCentral()
 	jcenter()
 	maven {
+		name "ojo"
+		url "http://oss.jfrog.org/artifactory/repo/"
+	}
+	maven {
 		name "sonatype-snapshots"
 		url "https://oss.sonatype.org/content/repositories/snapshots"
 	}
@@ -28,9 +32,9 @@ dependencies {
 	compile 'com.google.code.gson:gson:2.3.1'
 	compile 'org.lwjgl.lwjgl:lwjgl:2.9.3'
 	compile 'org.lwjgl.lwjgl:lwjgl_util:2.9.3'
-	/*compile 'de.dfki.mary:marytts-runtime:5.1.2'
+	compile 'de.dfki.mary:marytts-runtime:5.1.2'
 	compile 'de.dfki.mary:marytts-lang-en:5.1.2'
-	compile 'de.dfki.mary:voice-cmu-slt-hsmm:5.1.2'*/// doesn't work yet
+	compile 'de.dfki.mary:voice-cmu-slt-hsmm:5.1.2'
 	compile 'edu.cmu.sphinx:sphinx4-core:1.0-SNAPSHOT'
 	compile 'edu.cmu.sphinx:sphinx4-data:1.0-SNAPSHOT'
 }
