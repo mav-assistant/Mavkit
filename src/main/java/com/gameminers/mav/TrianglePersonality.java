@@ -24,7 +24,8 @@ public class TrianglePersonality extends Personality {
 	public float targetAngle;
 	public float targetPulse;
 	@Override
-	public void renderFace() {
+	public void renderFace(float diameter) {
+		float radius = diameter/2f;
 		frameCount++;
 		float pulse;
 		if (Mav.idle) {
@@ -37,9 +38,9 @@ public class TrianglePersonality extends Personality {
 		GL11.glRotatef(angle, 0f, 0f, 1f);
 		float[] bg = Mav.getColor(0.3f);
 		float[] fg = Mav.getColor(0.8f);
-		Rendering.drawTriangle(0, 0, 50+((float)((pulse)*5f)), fg[0], fg[1], fg[2], 0.5f, 0);
-		Rendering.drawTriangle(0, 0, 45, fg[0], fg[1], fg[2], 1, 0.5f);
-		Rendering.drawTriangle(0, 0, 40, bg[0], bg[1], bg[2], 1, 1f);
+		Rendering.drawTriangle(0, 0, radius*(0.85f+(float)((pulse)*0.15f)), fg[0], fg[1], fg[2], 0.5f, 0);
+		Rendering.drawTriangle(0, 0, radius*0.8f, fg[0], fg[1], fg[2], 1, 0.5f);
+		Rendering.drawTriangle(0, 0, radius*0.7f, bg[0], bg[1], bg[2], 1, 1f);
 	}
 
 }

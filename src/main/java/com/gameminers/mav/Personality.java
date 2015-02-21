@@ -17,6 +17,6 @@ package com.gameminers.mav;
 
 public abstract class Personality {
 
-	public abstract void renderFace();
+	public abstract void renderFace(float diameter);
 
 }
