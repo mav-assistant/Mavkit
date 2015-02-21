@@ -26,7 +26,12 @@ public class MainScreen extends Screen {
 			GL11.glTranslatef(Display.getWidth()/2f, 90, 0);
 			Mav.personality.renderFace();
 		GL11.glPopMatrix();
-		lightFont.drawString((Display.getWidth()/2)-(lightFont.getWidth("What can I do for you?")/2), 180, "What can I do for you?", Color.white);
+		int y = 180;
+		String[] split = Mav.text.split("\n");
+		for (String s : split) {
+			lightFont.drawString((Display.getWidth()/2)-(lightFont.getWidth(s)/2), y, s, Color.white);
+			y+=30;
+		}
 	}
 
 }

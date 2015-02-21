@@ -19,13 +19,27 @@ import org.lwjgl.opengl.GL11;
 
 public class TrianglePersonality extends Personality {
 	private long frameCount;
+	private float angle;
+	
+	public float targetAngle;
+	public float targetPulse;
 	@Override
 	public void renderFace() {
 		frameCount++;
-		GL11.glRotatef((frameCount/20f)%360, 0f, 0f, 1f);
-		Rendering.drawTriangle(0, 0, 50+((float)((Math.sin(frameCount/30f)+1)*2.5f)), 0, 0.4f, 0, 1, 0);
-		Rendering.drawTriangle(0, 0, 45, 0, 0.8f, 0, 1, 0.5f);
-		Rendering.drawTriangle(0, 0, 40, 0, 0.3f, 0, 1, 1f);
+		float pulse;
+		if (Mav.idle) {
+			angle = (angle+0.05f)%360;
+			pulse = (float)(Math.sin(frameCount/30f)+1)/2f;
+		} else {
+			angle = Mav.tend(angle, targetAngle, 8f);
+			pulse = targetPulse;
+		}
+		GL11.glRotatef(angle, 0f, 0f, 1f);
+		float[] bg = Mav.getColor(0.3f);
+		float[] fg = Mav.getColor(0.8f);
+		Rendering.drawTriangle(0, 0, 50+((float)((pulse)*5f)), fg[0], fg[1], fg[2], 0.5f, 0);
+		Rendering.drawTriangle(0, 0, 45, fg[0], fg[1], fg[2], 1, 0.5f);
+		Rendering.drawTriangle(0, 0, 40, bg[0], bg[1], bg[2], 1, 1f);
 	}
 
 }
