@@ -56,9 +56,12 @@ public class Mav {
 	public static long totalFrameCounter = 0;
 
 	public static String text = "What can I do for you?";
+	
+	public static VoiceThread voiceThread;
 
 	public static void stop() {
 		Display.destroy();
+		voiceThread.interrupt();
 		run = false;
 	}
 
@@ -115,6 +118,8 @@ public class Mav {
 			
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			voiceThread = new VoiceThread();
+			voiceThread.start();
 			text = "\u00A7LHi! I'm Mav.\nI don't know who you are yet,\nso let's fix that.\n\n\u00A7sSay 'Hey, Mav' to get started.";
 			while (run) {
 				GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
