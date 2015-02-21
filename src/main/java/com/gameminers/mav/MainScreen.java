@@ -18,19 +18,32 @@ package com.gameminers.mav;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
+import org.newdawn.slick.TrueTypeFont;
 
 public class MainScreen extends Screen {
 	@Override
 	public void render() {
+		float w = Display.getWidth()/2f;
 		GL11.glPushMatrix();
-			GL11.glTranslatef(Display.getWidth()/2f, 90, 0);
-			Mav.personality.renderFace();
+			GL11.glTranslatef(Display.getWidth()/2f, 10+(w/2f), 0);
+			Mav.personality.renderFace(w);
 		GL11.glPopMatrix();
-		int y = 180;
+		int y = (int) w;
 		String[] split = Mav.text.split("\n");
 		for (String s : split) {
-			lightFont.drawString((Display.getWidth()/2)-(lightFont.getWidth(s)/2), y, s, Color.white);
-			y+=30;
+			TrueTypeFont font = lightFont[1];
+			if (s.startsWith("\u00A7l")) {
+				font = baseFont[1];
+				s = s.substring(2);
+			} else if (s.startsWith("\u00A7L")) {
+				font = lightFont[2];
+				s = s.substring(2);
+			} else if (s.startsWith("\u00A7s")) {
+				font = lightFont[0];
+				s = s.substring(2);
+			}
+			font.drawString((Display.getWidth()/2)-(font.getWidth(s)/2), y, s, Color.white);
+			y+=font.getHeight();
 		}
 	}
 
