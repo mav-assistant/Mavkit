@@ -18,7 +18,7 @@ package com.gameminers.mav;
 import org.lwjgl.opengl.GL11;
 
 public class Rendering {
-	public static void drawPolygon(float x, float y, int radius, float r, float g, float b, float a, int count, float z) {
+	public static void drawPolygon(float x, float y, float radius, float r, float g, float b, float a, int count, float z) {
 		GL11.glPushMatrix();
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			GL11.glTranslatef(x, y, z);
