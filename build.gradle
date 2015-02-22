@@ -77,3 +77,5 @@ license {
 }
 
 mainClassName = "com.gameminers.mav.Mav"
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
