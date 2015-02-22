@@ -69,4 +69,11 @@ public class PolygonPersonality implements Personality {
 			targetAngle = 0;
 		}
 	}
+	public void calm() {
+		if (angle < 180) {
+			targetAngle = 0;
+		} else {
+			targetAngle = 360;
+		}
+	}
 }

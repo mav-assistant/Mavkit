@@ -25,7 +25,7 @@ public class FirstRunThread extends Thread {
 		try {
 			RenderState.text = "\u00A7LHi! I'm Mav.\nI don't know who you are,\nso let's fix that.\n\nFirst off, what's your name?\n\u00A7sClick inside the box to start typing.";
 			Mav.currentScreen = new FirstRunScreen();
-			Mav.ttsInterface.sayAndWait("Hi! I'm Mav. I dont know who you are, so let's fix that. First off, what is your name?");
+			Mav.ttsInterface.say("Hi! I'm Mav. I dont know who you are, so let's fix that. First off, what is your name?");
 		} catch (Throwable t) {
 			Dialogs.showErrorDialog(null, "An error occured during first run setup.", t);
 		}

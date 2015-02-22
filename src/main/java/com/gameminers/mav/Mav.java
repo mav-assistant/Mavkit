@@ -72,7 +72,7 @@ public class Mav {
 		RenderState.text = "\u00A7LGoodbye.";
 		RenderState.idle = false;
 		if (personality instanceof PolygonPersonality) {
-			((PolygonPersonality)personality).spin();
+			((PolygonPersonality)personality).calm();
 			((PolygonPersonality)personality).targetPulse = 0.075f;
 		}
 		if (ttsInterface != null) {
@@ -89,6 +89,7 @@ public class Mav {
 	}
 
 	public static void main(String[] args) {
+		Thread.currentThread().setName("Init thread");
 		configDir.mkdirs();
 		try {
 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
@@ -119,6 +120,7 @@ public class Mav {
 			return;
 		}
 		try {
+			Thread.currentThread().setName("Render thread");
 			Rendering.setUpGL();
 			new FirstRunThread().start();
 			/*voiceThread = new VoiceThread();
@@ -145,6 +147,7 @@ public class Mav {
 					if (stopFrames >= 40) {
 						fadeFrames++;
 						if (fadeFrames >= FADE_TIME+10) {
+							audioManager.destroy();
 							render = false;
 						}
 					}
