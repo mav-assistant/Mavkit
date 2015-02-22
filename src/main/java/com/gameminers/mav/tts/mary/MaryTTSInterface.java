@@ -15,6 +15,8 @@
  */
 package com.gameminers.mav.tts.mary;
 
+import javax.sound.sampled.AudioInputStream;
+
 import marytts.LocalMaryInterface;
 import marytts.MaryInterface;
 import marytts.exceptions.MaryConfigurationException;
@@ -32,7 +34,8 @@ public class MaryTTSInterface implements TTSInterface {
 	
 	@Override
 	public void say(String msg) throws SynthesisException {
-		player = new AudioPlayer(mary.generateAudio(msg));
+		AudioInputStream audio = mary.generateAudio(msg);
+		player = new AudioPlayer(audio);
 		player.start();
 	}
 	

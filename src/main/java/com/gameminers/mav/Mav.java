@@ -23,7 +23,9 @@ import marytts.exceptions.SynthesisException;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.newdawn.slick.Color;
 
+import com.gameminers.mav.audio.AudioManager;
 import com.gameminers.mav.firstrun.FirstRunThread;
 import com.gameminers.mav.personality.Personality;
 import com.gameminers.mav.personality.poly.PolygonPersonality;
@@ -52,6 +54,7 @@ public class Mav {
 	private static boolean render = true;
 
 	public static final PersonalityRenderer personalityRenderer = new PersonalityRenderer();
+	public static final AudioManager audioManager = new AudioManager();
 	
 	public static Personality personality = new TrianglePersonality();
 
@@ -64,12 +67,12 @@ public class Mav {
 
 	public static void stop() {
 		RenderState.targetSat = 0;
-		RenderState.targetLum = 0.3f;
+		RenderState.targetDim = 0.3f;
 		RenderState.text = "\u00A7LGoodbye.";
 		RenderState.idle = false;
 		if (personality instanceof PolygonPersonality) {
-			((PolygonPersonality)personality).targetAngle = 0;
-			((PolygonPersonality)personality).targetPulse = 0;
+			((PolygonPersonality)personality).spin();
+			((PolygonPersonality)personality).targetPulse = 0.075f;
 		}
 		if (ttsInterface != null) {
 			try {
@@ -94,14 +97,17 @@ public class Mav {
 			} catch (Exception ex) {}
 		}
 		try {
-			ttsInterface = new MaryTTSInterface();
-		} catch (Throwable t) {
-			Dialogs.showErrorDialog(null, "An error occurred while initializing MARY. Mav will now exit.", t);
-			return;
-		}
-		try {
 			Rendering.setUpDisplay();
 			Fonts.loadFonts();
+			for (int i = 0; i < FADE_TIME+10; i++) {
+				drawBasicScreen("Getting ready", 1.0f-(i/FADE_TIME));
+				Display.sync(TARGET_FPS);
+			}
+			drawBasicScreen("Initializing MARY", 0.0f);
+			ttsInterface = new MaryTTSInterface();
+			drawBasicScreen("Setting up audio", 0.0f);
+			audioManager.init();
+			drawBasicScreen("Setting up input", 0.0f);
 			Screen.initMouse();
 		} catch (Throwable t) {
 			Dialogs.showErrorDialog(null, "An error occurred while setting up the UI. Mav will now exit.", t);
@@ -144,6 +150,19 @@ public class Mav {
 		}
 	}
 
+	private static void drawBasicScreen(String s, float dim) {
+		Rendering.setUpGL();
+		Rendering.beforeFrame();
+		GL11.glClearColor(0, 0, 0, 1);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+		Screen.lightFont[2].drawString((Display.getWidth()/2)-(Screen.lightFont[2].getWidth(s)/2), 160, s, Color.white);
+		Rendering.drawTriangle(Display.getWidth()/2f, 90, 74, 0.5f, 0.5f, 0.5f, 0.5f, 0);
+		Rendering.drawTriangle(Display.getWidth()/2f, 90, 64, 0.5f, 0.5f, 0.5f, 1, 0.5f);
+		Rendering.drawTriangle(Display.getWidth()/2f, 90, 56, 0, 0, 0, 1, 1f);
+		Rendering.drawRectangle(0, 0, Display.getWidth(), Display.getHeight(), 0, 0, 0, dim, 1);
+		Display.update();
+	}
+
 	private static void doRender() {
 		GL11.glPushMatrix();
 		personalityRenderer.render();
@@ -155,9 +174,6 @@ public class Mav {
 		Screen.baseFont[0].drawString(8, 8, fps+" FPS");
 		if (personality instanceof PolygonPersonality) {
 			Screen.baseFont[0].drawString(8, 24, ((PolygonPersonality)personality).angle+"°");
-		}
-		if (totalFrameCounter < FADE_TIME) {
-			fadeFrames = (int) (FADE_TIME-totalFrameCounter);
 		}
 		Rendering.drawRectangle(0, 0, Display.getWidth(), Display.getHeight(), 0, 0, 0, (fadeFrames/FADE_TIME), 1);
 		GL11.glPopMatrix();

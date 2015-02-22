@@ -62,4 +62,11 @@ public class PolygonPersonality implements Personality {
 	public int getSideCount() {
 		return sideCount;
 	}
+	public void spin() {
+		if (angle < 180) {
+			targetAngle = 360;
+		} else {
+			targetAngle = 0;
+		}
+	}
 }

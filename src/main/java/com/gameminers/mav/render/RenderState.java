@@ -19,26 +19,26 @@ import java.awt.Color;
 
 public class RenderState {
 
-	public static float targetHue = 120;
-	public static float lagHue = 120;
+	public static float targetHue = 150;
+	public static float lagHue = 150;
 	
 	public static float targetSat = 1.0f;
-	public static float lagSat = 1.0f;
+	public static float lagSat = 0.0f;
 	
-	public static float targetLum = 0.0f;
-	public static float lagLum = 0.0f;
+	public static float targetDim = 0.0f;
+	public static float lagDim = 0.3f;
 	
 	public static boolean idle = true;
 	public static String text = "What can I do for you?";
 	
 	public static float[] getColor(float lum) {
-		return new Color(Color.HSBtoRGB(lagHue/360f, lagSat, lum-lagLum)).getComponents(null);
+		return new Color(Color.HSBtoRGB(lagHue/360f, lagSat, lum-lagDim)).getComponents(null);
 	}
 	
 	public static void update() {
 		lagHue = Rendering.tend(lagHue, targetHue, 16f);
-		lagSat = Rendering.tend(lagSat, targetSat, 16f);
-		lagLum = Rendering.tend(lagLum, targetLum, 16f);
+		lagSat = Rendering.tend(lagSat, targetSat, 24f);
+		lagDim = Rendering.tend(lagDim, targetDim, 32f);
 	}
 
 }
