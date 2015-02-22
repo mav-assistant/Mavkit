@@ -98,6 +98,10 @@ public class Mav {
 		}
 		try {
 			Rendering.setUpDisplay();
+		} catch (Throwable t) {
+			Dialogs.showErrorDialog(null, "An error occurred while initializing LWJGL. Mav will now exit.", t);
+		}
+		try {
 			Fonts.loadFonts();
 			for (int i = 0; i < FADE_TIME+10; i++) {
 				drawBasicScreen("Getting ready", 1.0f-(i/FADE_TIME));

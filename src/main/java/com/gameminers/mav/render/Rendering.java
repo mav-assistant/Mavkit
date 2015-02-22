@@ -15,12 +15,11 @@
  */
 package com.gameminers.mav.render;
 
+import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.PixelFormat;
-
-import com.gameminers.mav.Dialogs;
 
 public class Rendering {
 	public static void drawPolygon(float x, float y, float radius, float r, float g, float b, float a, int count, float z) {
@@ -66,14 +65,20 @@ public class Rendering {
 		GL11.glPopMatrix();
 	}
 	
-	public static void setUpDisplay() {
+	public static void setUpDisplay() throws LWJGLException {
+		Display.setDisplayMode(new DisplayMode(320, 480));
+		Display.setTitle("Mav");
+		Display.setResizable(true);
 		try {
-			Display.setDisplayMode(new DisplayMode(320, 480));
-			Display.setTitle("Mav");
-			Display.setResizable(true);
 			Display.create(new PixelFormat(24, 8, 8, 8, 8));
-		} catch (Throwable t) {
-			Dialogs.showErrorDialog(null, "An error occurred while initializing LWJGL. Mav will now exit.", t);
+		} catch (LWJGLException e) {
+			// try again a couple times with less samples
+			try {
+				Display.create(new PixelFormat(24, 8, 8, 8, 4));
+			} catch (LWJGLException ex) {
+				// no catch block here, if even this fails then we won't be able to get a reasonable context
+				Display.create(new PixelFormat(24, 8, 8, 8, 0));
+			}
 		}
 	}
 	
