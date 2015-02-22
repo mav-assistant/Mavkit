@@ -66,6 +66,7 @@ public class Mav {
 	public static TTSInterface ttsInterface;
 
 	public static void stop() {
+		if (!run) return;
 		RenderState.targetSat = 0;
 		RenderState.targetDim = 0.3f;
 		RenderState.text = "\u00A7LGoodbye.";
