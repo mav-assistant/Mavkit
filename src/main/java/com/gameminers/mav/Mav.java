@@ -27,7 +27,7 @@ import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 
 import com.gameminers.mav.audio.AudioManager;
-import com.gameminers.mav.firstrun.FirstRunThread;
+import com.gameminers.mav.firstrun.EnterNameScreen;
 import com.gameminers.mav.personality.Personality;
 import com.gameminers.mav.personality.poly.PolygonPersonality;
 import com.gameminers.mav.personality.poly.TrianglePersonality;
@@ -63,6 +63,9 @@ public class Mav {
 	private static int fadeFrames = 0;
 	private static int stopFrames = 0;
 	
+	public static String userName;
+	public static String phoneticUserName;
+	
 	public static VoiceThread voiceThread;
 	public static TTSInterface ttsInterface;
 
@@ -72,6 +75,7 @@ public class Mav {
 		RenderState.targetDim = 0.3f;
 		RenderState.text = "\u00A7LGoodbye.";
 		RenderState.idle = false;
+		currentScreen = null;
 		if (personality instanceof PolygonPersonality) {
 			((PolygonPersonality)personality).calm();
 			((PolygonPersonality)personality).targetPulse = 0.075f;
@@ -124,7 +128,9 @@ public class Mav {
 		try {
 			Thread.currentThread().setName("Render thread");
 			Rendering.setUpGL();
-			new FirstRunThread().start();
+			RenderState.text = "\u00A7LHi! I'm Mav.\nI don't know who you are,\nso let's fix that.\n\nFirst off, what's your name?\n\u00A7sClick inside the box to start typing.\n\u00A7sPress Enter when you're finished.";
+			currentScreen = new EnterNameScreen(false);
+			ttsInterface.sayWithEmotion("<emotionml version='1.0' xmlns='http://www.w3.org/2009/10/emotionml' category-set='http://www.w3.org/TR/emotion-voc/xml#everyday-categories'><emotion><category name='happy'/>Hi! I'm Mav.</emotion>I dont know who you are, so let's fix that.<emotion><category name='interested'/>First off, what is your name?</emotion></emotionml>", "Hi! I'm Mav. I dont know who you are, so let's fix that. First off, what is your name?");
 			/*voiceThread = new VoiceThread();
 			voiceThread.start();*/
 			while (render) {

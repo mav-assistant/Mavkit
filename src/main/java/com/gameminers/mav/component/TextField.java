@@ -127,10 +127,8 @@ public class TextField extends Component {
 	public void mouseDown(int x, int y, int button, long nanos) {
 		if ((x >= this.x && x <= this.x+this.width) && (y >= this.y && y <= this.y+this.height)) {
 			focused = true;
-			System.out.println("Got focus");
 		} else {
 			focused = false;
-			System.out.println("Lost focus");
 		}
 	}
 
@@ -140,6 +138,20 @@ public class TextField extends Component {
 
 	@Override
 	public void mouseWheel(int x, int y, int dWheel, long nanos) {
+	}
+
+	public String getText() {
+		return str;
+	}
+
+	public void setText(String str) {
+		content.setLength(0);
+		content.append(str);
+		this.str = str;
+	}
+
+	public void focus() {
+		focused = true;
 	}
 
 }

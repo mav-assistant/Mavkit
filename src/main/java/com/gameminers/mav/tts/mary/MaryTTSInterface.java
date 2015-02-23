@@ -35,7 +35,16 @@ public class MaryTTSInterface implements TTSInterface {
 	@Override
 	public void say(String msg) throws SynthesisException {
 		mary.setInputType("TEXT");
-		AudioInputStream audio = mary.generateAudio(msg);
+		// MARY TTS is a bit glitchy at the best of times, so we have these special handicaps for common words that it doesn't say correctly.
+		AudioInputStream audio = mary.generateAudio(msg
+				.replace("don't", "dont")
+				.replace("Don't", "Dont")
+				.replace("Does", "duhz")
+				.replace("does", "duhz")
+				.replace("Color", "Koler")
+				.replace("color", "koler")
+				.replace("Can't", "Cant")
+				.replace("can't", "cant"));
 		Mav.audioManager.play(audio);
 	}
 
