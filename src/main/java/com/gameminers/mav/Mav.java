@@ -21,6 +21,7 @@ import javax.swing.UIManager;
 
 import marytts.exceptions.SynthesisException;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
@@ -77,7 +78,7 @@ public class Mav {
 		}
 		if (ttsInterface != null) {
 			try {
-				ttsInterface.say("Goodbye.");
+				ttsInterface.sayWithEmotion("<emotionml version='1.0' xmlns='http://www.w3.org/2009/10/emotionml' category-set='http://www.w3.org/TR/emotion-voc/xml#everyday-categories'><emotion><category name='sad'/>Goodbye.</emotion></emotionml>", "Goodbye.");
 			} catch (SynthesisException e) {
 				e.printStackTrace();
 			}
@@ -115,6 +116,7 @@ public class Mav {
 			audioManager.init();
 			drawBasicScreen("Setting up input", 0.0f);
 			Screen.initMouse();
+			Keyboard.enableRepeatEvents(true);
 		} catch (Throwable t) {
 			Dialogs.showErrorDialog(null, "An error occurred while setting up the UI. Mav will now exit.", t);
 			return;

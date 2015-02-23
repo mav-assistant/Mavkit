@@ -21,6 +21,8 @@ import marytts.LocalMaryInterface;
 import marytts.MaryInterface;
 import marytts.exceptions.MaryConfigurationException;
 import marytts.exceptions.SynthesisException;
+import marytts.util.dom.DomUtils;
+
 import com.gameminers.mav.Mav;
 import com.gameminers.mav.tts.TTSInterface;
 
@@ -32,8 +34,21 @@ public class MaryTTSInterface implements TTSInterface {
 	
 	@Override
 	public void say(String msg) throws SynthesisException {
+		mary.setInputType("TEXT");
 		AudioInputStream audio = mary.generateAudio(msg);
 		Mav.audioManager.play(audio);
+	}
+
+	@Override
+	public void sayWithEmotion(String msg, String plaintextFallback)
+			throws SynthesisException {
+		try {
+			mary.setInputType("EMOTIONML");
+			AudioInputStream audio = mary.generateAudio(DomUtils.parseDocument(msg));
+			Mav.audioManager.play(audio);
+		} catch (Exception e) {
+			say(plaintextFallback);
+		}
 	}
 
 }

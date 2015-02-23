@@ -20,5 +20,6 @@ import marytts.exceptions.SynthesisException;
 public interface TTSInterface {
 
 	void say(String msg) throws SynthesisException;
-
+	void sayWithEmotion(String msg, String plaintextFallback) throws SynthesisException;
+	
 }

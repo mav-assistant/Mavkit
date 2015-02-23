@@ -15,24 +15,101 @@
  */
 package com.gameminers.mav.component;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
+
 import com.gameminers.mav.render.RenderState;
 import com.gameminers.mav.render.Rendering;
+import com.gameminers.mav.screen.Screen;
 
 
 public class TextField extends Component {
-
+	private boolean focused;
+	private int frames = 0;
+	private StringBuilder content = new StringBuilder();
+	private int cursorPos = 0;
+	private int viewPos = 0;
+	private String str = "";
 	@Override
 	public void doRender() {
+		frames++;
 		float[] fg = RenderState.getColor(0.8f);
 		float[] bg = RenderState.getColor(0.3f);
 		Rendering.drawRectangle(0, 0, 16, 16, 1, 0, 0, 0, 0);
 		Rendering.drawRectangle(0, 0, width, height, fg[0], fg[1], fg[2], 1.0f, 0f);
 		Rendering.drawRectangle(2, 2, width-4, height-4, bg[0], bg[1], bg[2], 1.0f, 0f);
+		
+		// roughly ported from Glass Pane
+		if (cursorPos < 0) {
+			cursorPos = 0;
+		} else if (cursorPos > content.length()) {
+			cursorPos = content.length();
+		}
+		String trimmedText = trimStringToWidth(str.substring(viewPos), width-24);
+		int trimmedLength = trimmedText.length();
+		if (cursorPos > viewPos+trimmedLength) {
+			viewPos = cursorPos - trimmedLength;
+		} else if (cursorPos < viewPos) {
+			viewPos = cursorPos;
+		}
+		int len = Screen.baseFont[1].getWidth(trimmedText);
+		int mod = (int) (len >= width-16 ? len - (width-16) : 0);
+		if (viewPos == 0) {
+			mod = 0;
+		}
+		if (focused) {
+			Rendering.drawRectangle((8-mod)+Screen.baseFont[1].getWidth(trimmedText.substring(0, Math.min(trimmedLength, Math.max(0, cursorPos-viewPos)))), 6, 2, height-12, 1, 1, 1, (1.0f-((frames%25)/40f)) / (Display.isActive() ? 1f : 4f), 0.2f);
+		}
+		GL11.glEnable(GL11.GL_SCISSOR_TEST);
+		GL11.glScissor((int)x+8, Display.getHeight()-(int)(y+height), (int)width-16, (int)height);
+		Screen.baseFont[1].drawString(8-mod, 1, trimmedText);
+		GL11.glDisable(GL11.GL_SCISSOR_TEST);
+	}
+
+	private String trimStringToWidth(String str, float width) {
+		if (str.length() == 0) return str;
+		StringBuilder sb = new StringBuilder();
+		float totalWidth = 0;
+		int idx = 0;
+		do {
+			String ch = Character.toString(str.charAt(idx));
+			sb.append(ch);
+			totalWidth += Screen.baseFont[1].getWidth(ch);
+			idx++;
+		} while (totalWidth < width && idx < str.length());
+		return sb.toString();
 	}
 
 	@Override
 	public void keyDown(int k, char c, long nanos) {
 		System.out.println("keyDown - "+c+" ["+k+"] @ "+nanos);
+		if (focused) {
+			if (k == Keyboard.KEY_BACK) {
+				if (content.length() > 0 && cursorPos > 0) {
+					content.deleteCharAt(cursorPos-1);
+					str = content.toString();
+					cursorPos--;
+				}
+			} else if (k == Keyboard.KEY_DELETE) {
+				if (cursorPos < content.length()) {
+					content.deleteCharAt(cursorPos);
+					str = content.toString();
+				}
+			} else if (k == Keyboard.KEY_LEFT) {
+				if (cursorPos > 0) {
+					cursorPos--;
+				}
+			} else if (k == Keyboard.KEY_RIGHT) {
+				if (cursorPos < content.length()) {
+					cursorPos++;
+				}
+			} else if (!Character.isISOControl(c)) {
+				content.insert(cursorPos, c);
+				str = content.toString();
+				cursorPos++;
+			}
+		}
 	}
 
 	@Override
@@ -48,6 +125,13 @@ public class TextField extends Component {
 	@Override
 	public void mouseDown(int x, int y, int button, long nanos) {
 		System.out.println("mouseDown - "+x+", "+y+" ["+button+"] @ "+nanos);
+		if ((x >= this.x && x <= this.x+this.width) && (y >= this.y && y <= this.y+this.height)) {
+			focused = true;
+			System.out.println("Got focus");
+		} else {
+			focused = false;
+			System.out.println("Lost focus");
+		}
 	}
 
 	@Override

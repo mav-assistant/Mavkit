@@ -15,11 +15,16 @@
  */
 package com.gameminers.mav.render;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import javax.imageio.ImageIO;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.PixelFormat;
+import org.newdawn.slick.opengl.ImageIOImageData;
 
 public class Rendering {
 	public static void drawPolygon(float x, float y, float radius, float r, float g, float b, float a, int count, float z) {
@@ -65,10 +70,15 @@ public class Rendering {
 		GL11.glPopMatrix();
 	}
 	
-	public static void setUpDisplay() throws LWJGLException {
+	public static void setUpDisplay() throws LWJGLException, IOException {
 		Display.setDisplayMode(new DisplayMode(320, 480));
 		Display.setTitle("Mav");
 		Display.setResizable(true);
+		Display.setIcon(new ByteBuffer[] {
+				new ImageIOImageData().imageToByteBuffer(ImageIO.read(ClassLoader.getSystemResource("resources/images/mav-16.png")), false, true, null),
+				new ImageIOImageData().imageToByteBuffer(ImageIO.read(ClassLoader.getSystemResource("resources/images/mav-32.png")), false, true, null),
+				new ImageIOImageData().imageToByteBuffer(ImageIO.read(ClassLoader.getSystemResource("resources/images/mav-64.png")), false, true, null)
+		});
 		try {
 			Display.create(new PixelFormat(24, 8, 8, 8, 8));
 		} catch (LWJGLException e) {
@@ -81,7 +91,7 @@ public class Rendering {
 			}
 		}
 	}
-	
+
 	public static void setUpGL() {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);

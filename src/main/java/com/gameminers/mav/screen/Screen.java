@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 import org.newdawn.slick.TrueTypeFont;
 
 import com.gameminers.mav.component.Component;
@@ -47,15 +48,15 @@ public abstract class Screen {
 			if (Mouse.getEventButton() != -1 && Mouse.getEventButtonState() != mouseButtonStates.get(Mouse.getEventButton())) {
 				mouseButtonStates.set(Mouse.getEventButton(), Mouse.getEventButtonState());
 				if (Mouse.getEventButtonState()) {
-					mouseDown(Mouse.getEventX(), Mouse.getEventY(), Mouse.getEventButton(), Mouse.getEventNanoseconds());
+					mouseDown(Mouse.getEventX(), Display.getHeight()-Mouse.getEventY(), Mouse.getEventButton(), Mouse.getEventNanoseconds());
 				} else {
-					mouseUp(Mouse.getEventX(), Mouse.getEventY(), Mouse.getEventButton(), Mouse.getEventNanoseconds());
+					mouseUp(Mouse.getEventX(), Display.getHeight()-Mouse.getEventY(), Mouse.getEventButton(), Mouse.getEventNanoseconds());
 				}
 			} else {
-				mouseMove(Mouse.getEventX(), Mouse.getEventY(), Mouse.getEventNanoseconds());
+				mouseMove(Mouse.getEventX(), Display.getHeight()-Mouse.getEventY(), Mouse.getEventNanoseconds());
 			}
 			if (Mouse.getEventDWheel() != 0) {
-				mouseWheel(Mouse.getEventX(), Mouse.getEventY(), Mouse.getEventDWheel(), Mouse.getEventNanoseconds());
+				mouseWheel(Mouse.getEventX(), Display.getHeight()-Mouse.getEventY(), Mouse.getEventDWheel(), Mouse.getEventNanoseconds());
 			}
 		}
 		preRender();

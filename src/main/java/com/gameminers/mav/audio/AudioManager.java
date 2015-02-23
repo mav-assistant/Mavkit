@@ -16,8 +16,8 @@
 package com.gameminers.mav.audio;
 
 import java.io.IOException;
-import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -61,12 +61,20 @@ public class AudioManager {
 					sink.drain();
 				}
 			}
+			if (sink != null) {
+				sink.close();
+				sink = null;
+			}
+			if (source != null) {
+				source.close();
+				source = null;
+			}
 		}
 	}
 	private AudioFormat targetFormat;
 	private SourceDataLine sink;
 	private TargetDataLine source;
-	private Deque<AudioInputStream> sounds = new ArrayDeque<>();
+	private Deque<AudioInputStream> sounds = new ConcurrentLinkedDeque<>();
 	private AudioThread thread;
 	public void init() {
 		targetFormat = new AudioFormat(Encoding.PCM_SIGNED, 48000, 16, 2, 2, 48000, false);
@@ -118,13 +126,5 @@ public class AudioManager {
 	}
 	public void destroy() {
 		thread.interrupt();
-		if (sink != null) {
-			sink.close();
-			sink = null;
-		}
-		if (source != null) {
-			source.close();
-			source = null;
-		}
 	}
 }
