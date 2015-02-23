@@ -83,7 +83,6 @@ public class TextField extends Component {
 
 	@Override
 	public void keyDown(int k, char c, long nanos) {
-		System.out.println("keyDown - "+c+" ["+k+"] @ "+nanos);
 		if (focused) {
 			if (k == Keyboard.KEY_BACK) {
 				if (content.length() > 0 && cursorPos > 0) {
@@ -104,6 +103,10 @@ public class TextField extends Component {
 				if (cursorPos < content.length()) {
 					cursorPos++;
 				}
+			} else if (k == Keyboard.KEY_HOME) {
+				cursorPos = 0;
+			} else if (k == Keyboard.KEY_END) {
+				cursorPos = content.length();
 			} else if (!Character.isISOControl(c)) {
 				content.insert(cursorPos, c);
 				str = content.toString();
@@ -114,17 +117,14 @@ public class TextField extends Component {
 
 	@Override
 	public void keyUp(int k, char c, long nanos) {
-		System.out.println("keyUp - "+c+" ["+k+"] @ "+nanos);
 	}
 
 	@Override
 	public void mouseMove(int x, int y, long nanos) {
-		System.out.println("mouseMove - "+x+", "+y+" @ "+nanos);
 	}
 	
 	@Override
 	public void mouseDown(int x, int y, int button, long nanos) {
-		System.out.println("mouseDown - "+x+", "+y+" ["+button+"] @ "+nanos);
 		if ((x >= this.x && x <= this.x+this.width) && (y >= this.y && y <= this.y+this.height)) {
 			focused = true;
 			System.out.println("Got focus");
@@ -136,12 +136,10 @@ public class TextField extends Component {
 
 	@Override
 	public void mouseUp(int x, int y, int button, long nanos) {
-		System.out.println("mouseUp - "+x+", "+y+" ["+button+"] @ "+nanos);
 	}
 
 	@Override
 	public void mouseWheel(int x, int y, int dWheel, long nanos) {
-		System.out.println("mouseWheel - "+x+", "+y+" ["+dWheel+"] @ "+nanos);
 	}
 
 }

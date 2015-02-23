@@ -37,13 +37,13 @@ public class Fonts {
 			lightIn.close();
 			
 			Screen.baseFont = new TrueTypeFont[] {
-					new TrueTypeFont(baseFont.deriveFont(12.0f), true),
+					new TrueTypeFont(baseFont.deriveFont(14.0f), true),
 					new TrueTypeFont(baseFont.deriveFont(24.0f), true),
 					new TrueTypeFont(baseFont.deriveFont(36.0f), true),
 					new TrueTypeFont(baseFont.deriveFont(48.0f), true),
 			};
 			Screen.lightFont = new TrueTypeFont[] {
-					new TrueTypeFont(lightFont.deriveFont(12.0f), true),
+					new TrueTypeFont(lightFont.deriveFont(14.0f), true),
 					new TrueTypeFont(lightFont.deriveFont(24.0f), true),
 					new TrueTypeFont(lightFont.deriveFont(36.0f), true),
 					new TrueTypeFont(lightFont.deriveFont(48.0f), true),
