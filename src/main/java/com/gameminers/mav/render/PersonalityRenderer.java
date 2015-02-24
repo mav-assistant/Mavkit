@@ -29,8 +29,12 @@ public class PersonalityRenderer {
 		GL11.glPushMatrix();
 			Mav.personality.renderBackground();
 			GL11.glTranslatef(Display.getWidth()/2f, 10+(w/2f), 0);
-			Mav.personality.renderForeground(w);
+			Mav.personality.renderForeground(w*0.9f);
 		GL11.glPopMatrix();
+		/*ByteBuffer icon = BufferUtils.createByteBuffer((int) (w*w*4));
+		GL11.glReadBuffer(GL11.GL_FRONT);
+		GL11.glReadPixels((int)((Display.getWidth()/2f)-(w/2f)), (int)(Display.getHeight()-(10+w)), (int)w, (int)w, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, icon);
+		Display.setIcon(new ByteBuffer[] {icon});*/
 		int y = (int) w;
 		String[] split = RenderState.text.split("\n");
 		for (String s : split) {
