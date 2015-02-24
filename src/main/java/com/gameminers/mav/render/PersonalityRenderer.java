@@ -35,22 +35,24 @@ public class PersonalityRenderer {
 		GL11.glReadBuffer(GL11.GL_FRONT);
 		GL11.glReadPixels((int)((Display.getWidth()/2f)-(w/2f)), (int)(Display.getHeight()-(10+w)), (int)w, (int)w, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, icon);
 		Display.setIcon(new ByteBuffer[] {icon});*/
-		int y = (int) w;
-		String[] split = RenderState.text.split("\n");
-		for (String s : split) {
-			TrueTypeFont font = Screen.lightFont[1];
-			if (s.startsWith("\u00A7l")) {
-				font = Screen.baseFont[1];
-				s = s.substring(2);
-			} else if (s.startsWith("\u00A7L")) {
-				font = Screen.lightFont[2];
-				s = s.substring(2);
-			} else if (s.startsWith("\u00A7s")) {
-				font = Screen.lightFont[0];
-				s = s.substring(2);
+		if (Mav.personality.renderScreen()) {
+			int y = (int) w;
+			String[] split = RenderState.text.split("\n");
+			for (String s : split) {
+				TrueTypeFont font = Screen.lightFont[1];
+				if (s.startsWith("\u00A7l")) {
+					font = Screen.baseFont[1];
+					s = s.substring(2);
+				} else if (s.startsWith("\u00A7L")) {
+					font = Screen.lightFont[2];
+					s = s.substring(2);
+				} else if (s.startsWith("\u00A7s")) {
+					font = Screen.lightFont[0];
+					s = s.substring(2);
+				}
+				font.drawString((Display.getWidth()/2)-(font.getWidth(s)/2), y, s, Color.white);
+				y+=font.getHeight();
 			}
-			font.drawString((Display.getWidth()/2)-(font.getWidth(s)/2), y, s, Color.white);
-			y+=font.getHeight();
 		}
 	}
 	

@@ -15,6 +15,9 @@
  */
 package com.gameminers.mav.personality.poly;
 
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
+
 import com.gameminers.mav.render.RenderState;
 import com.gameminers.mav.render.Rendering;
 
@@ -24,9 +27,11 @@ public class TrianglePersonality extends PolygonPersonality {
 	}
 	@Override
 	public void renderForeground(float diameter) {
+		GL11.glTranslatef(0, (0.3f-bgLum)*((Display.getHeight()/2f)-10), 0);
+		diameter *= Math.max(1.0f, (0.3f-bgLum)*6f);
 		setup();
 		float radius = diameter/2f;
-		float[] bg = RenderState.getColor(0.3f);
+		float[] bg = RenderState.getColor(bgLum);
 		float[] fg = RenderState.getColor(0.8f);
 		Rendering.drawTriangle(0, 0, radius*(0.85f+(pulse)*0.15f), fg[0], fg[1], fg[2], 0.5f, 0);
 		Rendering.drawTriangle(0, 0, radius*0.8f, fg[0], fg[1], fg[2], 1, 0.5f);

@@ -16,12 +16,8 @@
 package com.gameminers.mav.screen;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.List;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
 import org.newdawn.slick.TrueTypeFont;
 
 import com.gameminers.mav.component.Component;
@@ -29,36 +25,9 @@ import com.gameminers.mav.component.Component;
 public abstract class Screen {
 	public static TrueTypeFont[] lightFont;
 	public static TrueTypeFont[] baseFont;
-	private static BitSet mouseButtonStates;
 	protected final List<Component> components = new ArrayList<>();
 	
-	public static void initMouse() {
-		mouseButtonStates = new BitSet(Mouse.getButtonCount());
-	}
-	
 	public final void render() {
-		while (Keyboard.next()) {
-			if (Keyboard.getEventKeyState()) {
-				keyDown(Keyboard.getEventKey(), Keyboard.getEventCharacter(), Keyboard.getEventNanoseconds());
-			} else {
-				keyUp(Keyboard.getEventKey(), Keyboard.getEventCharacter(), Keyboard.getEventNanoseconds());
-			}
-		}
-		while (Mouse.next()) {
-			if (Mouse.getEventButton() != -1 && Mouse.getEventButtonState() != mouseButtonStates.get(Mouse.getEventButton())) {
-				mouseButtonStates.set(Mouse.getEventButton(), Mouse.getEventButtonState());
-				if (Mouse.getEventButtonState()) {
-					mouseDown(Mouse.getEventX(), Display.getHeight()-Mouse.getEventY(), Mouse.getEventButton(), Mouse.getEventNanoseconds());
-				} else {
-					mouseUp(Mouse.getEventX(), Display.getHeight()-Mouse.getEventY(), Mouse.getEventButton(), Mouse.getEventNanoseconds());
-				}
-			} else {
-				mouseMove(Mouse.getEventX(), Display.getHeight()-Mouse.getEventY(), Mouse.getEventNanoseconds());
-			}
-			if (Mouse.getEventDWheel() != 0) {
-				mouseWheel(Mouse.getEventX(), Display.getHeight()-Mouse.getEventY(), Mouse.getEventDWheel(), Mouse.getEventNanoseconds());
-			}
-		}
 		preRender();
 		for (Component c : components) {
 			c.render();

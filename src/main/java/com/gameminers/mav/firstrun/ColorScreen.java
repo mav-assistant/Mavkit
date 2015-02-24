@@ -20,7 +20,6 @@ public class ColorScreen extends InputScreen {
 		colors.put("orange", 30f);
 		colors.put("yellow", 60f);
 		colors.put("chartreuse", 90f);
-		colors.put("yellow-green", 90f);
 		colors.put("lime", 90f);
 		colors.put("green", 120f);
 		colors.put("teal", 150f);
@@ -34,6 +33,7 @@ public class ColorScreen extends InputScreen {
 		colors.put("violet", 270f);
 		colors.put("magenta", 300f);
 		colors.put("hot", 300f);
+		colors.put("pink", 300f);
 	}
 	public ColorScreen() {
 		RenderState.text = "\u00A7LOkay, "+Mav.userName+"\nWhat is your favorite\ncolor?\n\n\u00A7sType a color below to preview, press Enter\n\u00A7sto continue.\n\u00A7sThis will be the color of my interface.\n\u00A7s(e.g. teal, green)";
@@ -41,20 +41,21 @@ public class ColorScreen extends InputScreen {
 	
 	@Override
 	public void doRender() {
-		boolean matched = false;
+		String matched = null;
 		for (String s : colors.keySet()) {
 			if (Strings.similarity(tf.getText(), s) > 0.6) {
 				RenderState.targetHue = colors.get(s);
-				matched = true;
+				matched = s;
 				break;
 			}
 		}
-		if (!matched) {
+		if (matched == null) {
 			RenderState.targetHue = 150f;
-			if (StringUtils.isNotEmpty(tf.getText())) {
-				String str = "Unknown color";
-				baseFont[0].drawString((Display.getWidth()-baseFont[0].getWidth(str))-8, Display.getHeight()-18, str);
-			}
+			String str = "teal (unknown color)";
+			baseFont[0].drawString((Display.getWidth()-baseFont[0].getWidth(str))-8, Display.getHeight()-18, str);
+		} else {
+			String str = matched.equals("hot") ? "hot pink" : matched.equals("sky") ? "sky blue" : matched;
+			baseFont[0].drawString((Display.getWidth()-baseFont[0].getWidth(str))-8, Display.getHeight()-18, str);
 		}
 	}
 	

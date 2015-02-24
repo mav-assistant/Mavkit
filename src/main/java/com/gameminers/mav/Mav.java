@@ -16,12 +16,14 @@
 package com.gameminers.mav;
 
 import java.io.File;
+import java.util.BitSet;
 
 import javax.swing.UIManager;
 
 import marytts.exceptions.SynthesisException;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
@@ -48,6 +50,8 @@ public class Mav {
 
 	private static int frameCounter = 0;
 	private static int fps = 0;
+	private static long nspf = 0;
+	private static long frameTime = 0;
 	private static long lastFPSUpdate = System.currentTimeMillis();
 
 	public static Screen currentScreen = new MainScreen();
@@ -68,6 +72,11 @@ public class Mav {
 	
 	public static VoiceThread voiceThread;
 	public static TTSInterface ttsInterface;
+	
+	private static BitSet mouseButtonStates;
+	
+
+	public static long lastInputEvent = System.currentTimeMillis();
 
 	public static void stop() {
 		if (!run) return;
@@ -119,7 +128,7 @@ public class Mav {
 			drawBasicScreen("Setting up audio", 0.0f);
 			audioManager.init();
 			drawBasicScreen("Setting up input", 0.0f);
-			Screen.initMouse();
+			initMouse();
 			Keyboard.enableRepeatEvents(true);
 		} catch (Throwable t) {
 			Dialogs.showErrorDialog(null, "An error occurred while setting up the UI. Mav will now exit.", t);
@@ -134,14 +143,19 @@ public class Mav {
 			/*voiceThread = new VoiceThread();
 			voiceThread.start();*/
 			while (render) {
+				long start = System.nanoTime();
 				Rendering.beforeFrame();
 				RenderState.update();
+				processInput();
 				doRender();
-				
+				long time = System.nanoTime()-start;
 				totalFrameCounter++;
 				frameCounter++;
+				frameTime += time;
 				if (System.currentTimeMillis()-lastFPSUpdate >= 1000) {
 					fps = frameCounter;
+					nspf = frameTime/frameCounter;
+					frameTime = 0;
 					frameCounter = 0;
 					lastFPSUpdate = System.currentTimeMillis();
 				}
@@ -166,6 +180,53 @@ public class Mav {
 		}
 	}
 
+	public static void initMouse() {
+		mouseButtonStates = new BitSet(Mouse.getButtonCount());
+	}
+	
+	private static void processInput() {
+		while (Keyboard.next()) {
+			if (Keyboard.getEventKeyState()) {
+				if (currentScreen != null) {
+					currentScreen.keyDown(Keyboard.getEventKey(), Keyboard.getEventCharacter(), Keyboard.getEventNanoseconds());
+				}
+			} else {
+				if (currentScreen != null) {
+					currentScreen.keyUp(Keyboard.getEventKey(), Keyboard.getEventCharacter(), Keyboard.getEventNanoseconds());
+				}
+			}
+			inputReceived();
+		}
+		while (Mouse.next()) {
+			if (Mouse.getEventButton() != -1 && Mouse.getEventButtonState() != mouseButtonStates.get(Mouse.getEventButton())) {
+				mouseButtonStates.set(Mouse.getEventButton(), Mouse.getEventButtonState());
+				if (Mouse.getEventButtonState()) {
+					if (currentScreen != null) {
+						currentScreen.mouseDown(Mouse.getEventX(), Display.getHeight()-Mouse.getEventY(), Mouse.getEventButton(), Mouse.getEventNanoseconds());
+					}
+				} else {
+					if (currentScreen != null) {
+						currentScreen.mouseUp(Mouse.getEventX(), Display.getHeight()-Mouse.getEventY(), Mouse.getEventButton(), Mouse.getEventNanoseconds());
+					}
+				}
+			} else {
+				if (currentScreen != null) {
+					currentScreen.mouseMove(Mouse.getEventX(), Display.getHeight()-Mouse.getEventY(), Mouse.getEventNanoseconds());
+				}
+			}
+			if (Mouse.getEventDWheel() != 0) {
+				if (currentScreen != null) {
+					currentScreen.mouseWheel(Mouse.getEventX(), Display.getHeight()-Mouse.getEventY(), Mouse.getEventDWheel(), Mouse.getEventNanoseconds());
+				}
+			}
+			inputReceived();
+		}
+	}
+
+	private static void inputReceived() {
+		lastInputEvent = System.currentTimeMillis();
+	}
+
 	private static void drawBasicScreen(String s, float dim) {
 		Rendering.setUpGL();
 		Rendering.beforeFrame();
@@ -181,17 +242,19 @@ public class Mav {
 
 	private static void doRender() {
 		GL11.glPushMatrix();
-		personalityRenderer.render();
-		if (currentScreen != null) {
-			GL11.glPushMatrix();
-			currentScreen.render();
-			GL11.glPopMatrix();
-		}
-		Screen.baseFont[0].drawString(8, 8, fps+" FPS");
-		if (personality instanceof PolygonPersonality) {
-			Screen.baseFont[0].drawString(8, 24, ((PolygonPersonality)personality).angle+"°");
-		}
-		Rendering.drawRectangle(0, 0, Display.getWidth(), Display.getHeight(), 0, 0, 0, (fadeFrames/FADE_TIME), 1);
+			personalityRenderer.render();
+			if (currentScreen != null && personality.renderScreen()) {
+				GL11.glPushMatrix();
+					currentScreen.render();
+				GL11.glPopMatrix();
+			}
+			personality.postRender();
+			Screen.baseFont[0].drawString(8, 8, fps+" FPS");
+			Screen.baseFont[0].drawString(8, 24, (nspf/1000000f)+" ms/f");
+			if (personality instanceof PolygonPersonality) {
+				Screen.baseFont[0].drawString(8, 40, ((PolygonPersonality)personality).angle+"°");
+			}
+			Rendering.drawRectangle(0, 0, Display.getWidth(), Display.getHeight(), 0, 0, 0, (fadeFrames/FADE_TIME), 1);
 		GL11.glPopMatrix();
 	}
 

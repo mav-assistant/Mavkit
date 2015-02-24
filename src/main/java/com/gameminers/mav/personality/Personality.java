@@ -19,5 +19,7 @@ public interface Personality {
 
 	void renderForeground(float diameter);
 	void renderBackground();
+	void postRender();
+	boolean renderScreen();
 
 }

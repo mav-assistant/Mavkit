@@ -15,6 +15,7 @@
  */
 package com.gameminers.mav.personality.poly;
 
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
 import com.gameminers.mav.personality.Personality;
@@ -22,6 +23,10 @@ import com.gameminers.mav.render.RenderState;
 import com.gameminers.mav.render.Rendering;
 
 public class PolygonPersonality implements Personality {
+	/*private static final float IDLE_TIME = 30000;
+	private static final float IDLE_FADE_OUT_TIME = 10000;
+	private static final float IDLE_FADE_IN_FRAMES = 30;*/
+	
 	public int sideCount;
 	public PolygonPersonality(int sideCount) {
 		this.sideCount = sideCount;
@@ -32,21 +37,42 @@ public class PolygonPersonality implements Personality {
 	
 	public float targetAngle;
 	public float targetPulse;
+	
+	protected float bgLum = 0.3f;
+	//private int framesSinceFade = 0;
 	@Override
 	public void renderBackground() {
-		float[] rgb = RenderState.getColor(0.3f);
-		GL11.glClearColor(rgb[0], rgb[1], rgb[2], 1);
+		/*long delta = System.currentTimeMillis()-Mav.lastInputEvent;
+		if (delta > IDLE_TIME) {
+			bgLum = (1.0f-(Math.min(delta-IDLE_TIME, IDLE_FADE_OUT_TIME)/IDLE_FADE_OUT_TIME))*0.3f;
+			framesSinceFade = 0;
+		} else {
+			framesSinceFade++;
+			bgLum = Math.min(0.3f, framesSinceFade/IDLE_FADE_IN_FRAMES);
+		}*/
+		float[] rgb = RenderState.getColor(bgLum);
+		GL11.glClearColor(rgb[0], rgb[1], rgb[2], 1f);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 	}
 	@Override
 	public void renderForeground(float diameter) {
+		GL11.glTranslatef(0, (0.3f-bgLum)*((Display.getHeight()/2f)-10), 0);
+		diameter *= Math.max(1.0f, ((0.3f-bgLum)*3f)+1);
 		setup();
 		float radius = diameter/2f;
-		float[] bg = RenderState.getColor(0.3f);
+		float[] bg = RenderState.getColor(bgLum);
 		float[] fg = RenderState.getColor(0.8f);
 		Rendering.drawPolygon(0, 0, radius*(0.85f+(pulse)*0.15f), fg[0], fg[1], fg[2], 0.5f, sideCount, 0);
 		Rendering.drawPolygon(0, 0, radius*0.8f, fg[0], fg[1], fg[2], 1, sideCount, 0.5f);
 		Rendering.drawPolygon(0, 0, radius*0.7f, bg[0], bg[1], bg[2], 1, sideCount, 1f);
+	}
+	@Override
+	public void postRender() {
+		
+	}
+	@Override
+	public boolean renderScreen() {
+		return bgLum == 0.3f;
 	}
 	protected void setup() {
 		frameCount++;
