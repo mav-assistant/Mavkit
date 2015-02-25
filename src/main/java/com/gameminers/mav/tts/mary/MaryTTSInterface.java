@@ -84,9 +84,7 @@ public class MaryTTSInterface implements TTSInterface {
 		for (String s : split) {
 			boolean allCaps = true;
 			for (char c : s.toCharArray()) {
-				System.out.println(c);
 				if (Character.isLetter(c) && !Character.isUpperCase(c)) {
-					System.out.println("foul");
 					allCaps = false;
 					break;
 				}
@@ -102,7 +100,6 @@ public class MaryTTSInterface implements TTSInterface {
 				}
 			} else {
 				b.append(s);
-				System.out.println("appending straight");
 			}
 			b.append(" ");
 		}

@@ -75,6 +75,7 @@ public class Mav {
 	
 	private static BitSet mouseButtonStates;
 	
+	private static int silentFrames = 0;
 
 	public static long lastInputEvent = System.currentTimeMillis();
 
@@ -239,9 +240,26 @@ public class Mav {
 		Rendering.drawRectangle(0, 0, Display.getWidth(), Display.getHeight(), 0, 0, 0, dim, 1);
 		Display.update();
 	}
-
+	
 	private static void doRender() {
 		GL11.glPushMatrix();
+			if (audioManager.getSink().getLevel() == 0) {
+				if (silentFrames == 0 && personality instanceof PolygonPersonality) {
+					((PolygonPersonality)personality).calm();
+				}
+				silentFrames++;
+			} else {
+				silentFrames = 0;
+			}
+			if (silentFrames < 10) {
+				RenderState.idle = false;
+				if (personality instanceof PolygonPersonality) {
+					((PolygonPersonality)personality).targetPulse = (audioManager.getSink().getLevel()/80f);
+					System.out.println(((PolygonPersonality)personality).targetPulse);
+				}
+			} else {
+				RenderState.idle = true;
+			}
 			personalityRenderer.render();
 			if (currentScreen != null && personality.renderScreen()) {
 				GL11.glPushMatrix();

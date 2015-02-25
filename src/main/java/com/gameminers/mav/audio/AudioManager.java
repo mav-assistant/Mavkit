@@ -15,116 +15,54 @@
  */
 package com.gameminers.mav.audio;
 
-import java.io.IOException;
-import java.util.Deque;
-import java.util.concurrent.ConcurrentLinkedDeque;
-
-import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.SourceDataLine;
-import javax.sound.sampled.TargetDataLine;
-import javax.sound.sampled.AudioFormat.Encoding;
+import javax.sound.sampled.Mixer;
+
+import com.jsresources.AudioCapture;
+import com.jsresources.AudioPlayback;
+import com.jsresources.Constants;
 
 public class AudioManager {
-	public class AudioThread extends Thread {
-		public AudioThread() {
-			super("Audio thread");
-			setDaemon(true);
-		}
-		@Override
-		public void run() {
-			sink.start();
-			while (!interrupted()) {
-				if (sounds.isEmpty()) {
-					try {
-						sleep(100L);
-					} catch (InterruptedException e) {
-						break;
-					}
-				} else {
-					AudioInputStream stream = sounds.pop();
-					int read = 0;
-					byte[] data = new byte[65532];
-					while (read != -1) {
-						try {
-							read = stream.read(data, 0, data.length);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						if (read >= 0) {
-							sink.write(data, 0, read);
-						}
-					}
-					sink.drain();
-				}
-			}
-			if (sink != null) {
-				sink.close();
-				sink = null;
-			}
-			if (source != null) {
-				source.close();
-				source = null;
-			}
-		}
-	}
-	private AudioFormat targetFormat;
-	private SourceDataLine sink;
-	private TargetDataLine source;
-	private Deque<AudioInputStream> sounds = new ConcurrentLinkedDeque<>();
-	private AudioThread thread;
+	private Mixer mixer;
+	private AudioPlayback sink;
+	private AudioCapture source;
 	public void init() {
-		targetFormat = new AudioFormat(Encoding.PCM_SIGNED, 48000, 16, 2, 2, 48000, false);
-		DataLine.Info info = new DataLine.Info(SourceDataLine.class, targetFormat);
-		boolean supported = AudioSystem.isLineSupported(info);
-		if (!supported) {
-			targetFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, targetFormat.getSampleRate(),
-					targetFormat.getSampleSizeInBits(), targetFormat.getChannels(), targetFormat.getChannels()
-							* (targetFormat.getSampleSizeInBits() / 8), targetFormat.getSampleRate(),
-					targetFormat.isBigEndian());
-		}
+		mixer = AudioSystem.getMixer(AudioSystem.getMixerInfo()[0]); // TODO
+		sink = new AudioPlayback(Constants.FORMAT_CODE_CD, mixer, Constants.BUFFER_SIZE_MILLIS[Constants.BUFFER_SIZE_INDEX_DEFAULT]);
+		source = new AudioCapture(Constants.FORMAT_CODE_CD, mixer, Constants.BUFFER_SIZE_MILLIS[Constants.BUFFER_SIZE_INDEX_DEFAULT]);
 		try {
-			sink = AudioSystem.getSourceDataLine(targetFormat);
-			source = AudioSystem.getTargetDataLine(targetFormat);
-		} catch (LineUnavailableException e) {
+			sink.open();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (sink != null) {
-			if (sink.getClass().getName().equals("org.classpath.icedtea.pulseaudio.PulseAudioSourceDataLine")) {
-				PulseAudioHelper.setLineName(sink, "Mav");
-			}
-			try {
-				sink.open();
-			} catch (LineUnavailableException e) {
-				e.printStackTrace();
-			}
+		try {
+			source.open();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		if (source != null) {
-			if (source.getClass().getName().equals("org.classpath.icedtea.pulseaudio.PulseAudioTargetDataLine")) {
-				PulseAudioHelper.setLineName(source, "Mav");
-			}
-			try {
-				source.open();
-			} catch (LineUnavailableException e) {
-				e.printStackTrace();
-			}
+		try {
+			sink.start();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		thread = new AudioThread();
-		thread.start();
+		try {
+			source.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	public void play(AudioInputStream stream) {
-		sounds.addLast(AudioSystem.getAudioInputStream(targetFormat, stream));
+		sink.setAudioInputStream(stream);
 	}
-	public SourceDataLine getSink() {
+	public AudioPlayback getSink() {
 		return sink;
 	}
-	public TargetDataLine getSource() {
+	public AudioCapture getSource() {
 		return source;
 	}
 	public void destroy() {
-		thread.interrupt();
+		sink.close();
+		source.close();
 	}
 }

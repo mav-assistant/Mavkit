@@ -62,7 +62,7 @@ public class PolygonPersonality implements Personality {
 		float radius = diameter/2f;
 		float[] bg = RenderState.getColor(bgLum);
 		float[] fg = RenderState.getColor(0.8f);
-		Rendering.drawPolygon(0, 0, radius*(0.85f+(pulse)*0.15f), fg[0], fg[1], fg[2], 0.5f, sideCount, 0);
+		Rendering.drawPolygon(0, 0, radius*(0.85f+(pulse*0.15f)), fg[0], fg[1], fg[2], 0.5f, sideCount, 0);
 		Rendering.drawPolygon(0, 0, radius*0.8f, fg[0], fg[1], fg[2], 1, sideCount, 0.5f);
 		Rendering.drawPolygon(0, 0, radius*0.7f, bg[0], bg[1], bg[2], 1, sideCount, 1f);
 	}
@@ -78,11 +78,11 @@ public class PolygonPersonality implements Personality {
 		frameCount++;
 		if (RenderState.idle) {
 			angle = (angle+0.05f)%360;
-			pulse = (float)(Math.sin(frameCount/30f)+1)/2f;
+			targetPulse = (float)(Math.sin(frameCount/30f)+1)/2f;
 		} else {
 			angle = Rendering.tend(angle, targetAngle, 8f);
-			pulse = targetPulse;
 		}
+		pulse = Rendering.tend(pulse, targetPulse, 2f);
 		GL11.glRotatef(angle, 0f, 0f, 1f);
 	}
 	public int getSideCount() {
