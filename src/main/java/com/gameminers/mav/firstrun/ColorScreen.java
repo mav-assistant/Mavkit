@@ -8,6 +8,7 @@ import marytts.exceptions.SynthesisException;
 import org.apache.commons.lang.StringUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
+
 import com.gameminers.mav.Mav;
 import com.gameminers.mav.Strings;
 import com.gameminers.mav.render.RenderState;
@@ -41,24 +42,32 @@ public class ColorScreen extends InputScreen {
 	
 	@Override
 	public void doRender() {
-		String matched = null;
-		for (String s : colors.keySet()) {
-			if (Strings.similarity(tf.getText(), s) > 0.6) {
-				RenderState.targetHue = colors.get(s);
-				matched = s;
-				break;
-			}
-		}
+		String matched = matchColor();
 		if (matched == null) {
 			RenderState.targetHue = 150f;
 			String str = "teal (unknown color)";
 			baseFont[0].drawString((Display.getWidth()-baseFont[0].getWidth(str))-8, Display.getHeight()-18, str);
 		} else {
-			String str = matched.equals("hot") ? "hot pink" : matched.equals("sky") ? "sky blue" : matched;
+			String str = prettifyColorName(matched);
 			baseFont[0].drawString((Display.getWidth()-baseFont[0].getWidth(str))-8, Display.getHeight()-18, str);
 		}
 	}
 	
+	private String prettifyColorName(String matched) {
+		return matched.equals("hot") ? "hot pink" : matched.equals("sky") ? "sky blue" : matched;
+	}
+
+	private String matchColor() {
+		if (StringUtils.isBlank(tf.getText())) return "teal";
+		for (String s : colors.keySet()) {
+			if (Strings.similarity(tf.getText(), s) > 0.6) {
+				RenderState.targetHue = colors.get(s);
+				return s;
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public void onKeyDown(int k, char c, long nanos) {
 		if (k == Keyboard.KEY_RETURN) {
@@ -72,7 +81,23 @@ public class ColorScreen extends InputScreen {
 				}
 				return;
 			}
-			
+			String matched = matchColor();
+			if (matched == null) {
+				try {
+					Mav.ttsInterface.say("Sorry, I don't know that color.");
+				} catch (SynthesisException e) {
+					// TODO
+					e.printStackTrace();
+				}
+			} else {
+				try {
+					Mav.ttsInterface.say("Do you want to use Google services? This can help me better understand you, but it sends everything you say to Google.");
+				} catch (SynthesisException e) {
+					// TODO
+					e.printStackTrace();
+				}
+				Mav.currentScreen = new GoogleScreen();
+			}
 		}
 	}
 

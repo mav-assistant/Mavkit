@@ -15,6 +15,9 @@
  */
 package com.gameminers.mav.tts.mary;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.sound.sampled.AudioInputStream;
 
 import marytts.LocalMaryInterface;
@@ -28,15 +31,42 @@ import com.gameminers.mav.tts.TTSInterface;
 
 public class MaryTTSInterface implements TTSInterface {
 	private MaryInterface mary;
+	private Map<Character, String> letterNames = new HashMap<>();
 	public MaryTTSInterface() throws MaryConfigurationException {
 		mary = new LocalMaryInterface();
+		letterNames.put('A', "Ay");
+		letterNames.put('B', "Bee");
+		letterNames.put('C', "Sea");
+		letterNames.put('D', "Dee");
+		letterNames.put('E', "Ee");
+		letterNames.put('F', "Eff");
+		letterNames.put('G', "Gee");
+		letterNames.put('H', "Aitch");
+		letterNames.put('I', "Eye");
+		letterNames.put('J', "Jay");
+		letterNames.put('K', "Kay");
+		letterNames.put('L', "El");
+		letterNames.put('M', "Em");
+		letterNames.put('N', "En");
+		letterNames.put('O', "Oh");
+		letterNames.put('P', "Pee");
+		letterNames.put('Q', "Cue");
+		letterNames.put('R', "Ar");
+		letterNames.put('S', "Ess");
+		letterNames.put('T', "Tee");
+		letterNames.put('U', "You");
+		letterNames.put('V', "Vee");
+		letterNames.put('W', "Duble U");
+		letterNames.put('X', "Ecks");
+		letterNames.put('Y', "Why");
+		letterNames.put('Z', "Zee");
 	}
 	
 	@Override
 	public void say(String msg) throws SynthesisException {
 		mary.setInputType("TEXT");
 		// MARY TTS is a bit glitchy at the best of times, so we have these special handicaps for common words that it doesn't say correctly.
-		AudioInputStream audio = mary.generateAudio(msg
+		AudioInputStream audio = mary.generateAudio(abbrev(msg)
 				.replace("don't", "dont")
 				.replace("Don't", "Dont")
 				.replace("Does", "duhz")
@@ -46,6 +76,37 @@ public class MaryTTSInterface implements TTSInterface {
 				.replace("Can't", "Cant")
 				.replace("can't", "cant"));
 		Mav.audioManager.play(audio);
+	}
+
+	private String abbrev(String msg) {
+		String[] split = msg.split(" ");
+		StringBuilder b = new StringBuilder();
+		for (String s : split) {
+			boolean allCaps = true;
+			for (char c : s.toCharArray()) {
+				System.out.println(c);
+				if (Character.isLetter(c) && !Character.isUpperCase(c)) {
+					System.out.println("foul");
+					allCaps = false;
+					break;
+				}
+			}
+			if (allCaps) {
+				for (char c : s.toCharArray()) {
+					if (Character.isLetter(c)) {
+						b.append(letterNames.get(c));
+						b.append(" ");
+					} else {
+						b.append(c);
+					}
+				}
+			} else {
+				b.append(s);
+				System.out.println("appending straight");
+			}
+			b.append(" ");
+		}
+		return b.toString();
 	}
 
 	@Override
