@@ -30,6 +30,7 @@ public class RenderState {
 	public static float[] lagRGB = {0, 1.0f, 0.5f};
 	
 	public static boolean idle = true;
+	public static boolean attention = false;
 	public static String text = "What can I do for you?";
 	
 	public static float[] getColor(float lum) {

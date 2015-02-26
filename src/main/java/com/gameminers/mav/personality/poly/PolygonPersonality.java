@@ -76,11 +76,13 @@ public class PolygonPersonality implements Personality {
 	}
 	protected void setup() {
 		frameCount++;
-		if (RenderState.idle) {
-			angle = (angle+0.05f)%360;
-			targetPulse = (float)(Math.sin(frameCount/30f)+1)/2f;
-		} else {
+		if (RenderState.attention) {
 			angle = Rendering.tend(angle, targetAngle, 8f);
+		} else {
+			angle = (angle+0.05f)%360;
+		}
+		if (RenderState.idle) {
+			targetPulse = (float)(Math.sin(frameCount/30f)+1)/2f;
 		}
 		pulse = Rendering.tend(pulse, targetPulse, 2f);
 		GL11.glRotatef(angle, 0f, 0f, 1f);

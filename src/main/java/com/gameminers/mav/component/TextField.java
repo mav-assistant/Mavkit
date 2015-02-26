@@ -19,6 +19,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
+import com.gameminers.mav.Mav;
 import com.gameminers.mav.render.RenderState;
 import com.gameminers.mav.render.Rendering;
 import com.gameminers.mav.screen.Screen;
@@ -89,19 +90,27 @@ public class TextField extends Component {
 					content.deleteCharAt(cursorPos-1);
 					str = content.toString();
 					cursorPos--;
+				} else {
+					Mav.audioManager.playClip("notif4");
 				}
 			} else if (k == Keyboard.KEY_DELETE) {
 				if (cursorPos < content.length()) {
 					content.deleteCharAt(cursorPos);
 					str = content.toString();
+				} else {
+					Mav.audioManager.playClip("notif4");
 				}
 			} else if (k == Keyboard.KEY_LEFT) {
 				if (cursorPos > 0) {
 					cursorPos--;
+				} else {
+					Mav.audioManager.playClip("notif4");
 				}
 			} else if (k == Keyboard.KEY_RIGHT) {
 				if (cursorPos < content.length()) {
 					cursorPos++;
+				} else {
+					Mav.audioManager.playClip("notif4");
 				}
 			} else if (k == Keyboard.KEY_HOME) {
 				cursorPos = 0;

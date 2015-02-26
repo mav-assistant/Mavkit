@@ -188,4 +188,8 @@ public class AudioPlayback extends AudioBase {
 		}
 	}
 
+	public AudioInputStream getAudioInputStream() {
+		return ais;
+	}
+
 }

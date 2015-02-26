@@ -85,6 +85,7 @@ public class Mav {
 		RenderState.targetDim = 0.3f;
 		RenderState.text = "\u00A7LGoodbye.";
 		RenderState.idle = false;
+		RenderState.attention = true;
 		currentScreen = null;
 		if (personality instanceof PolygonPersonality) {
 			((PolygonPersonality)personality).calm();
@@ -178,6 +179,7 @@ public class Mav {
 			}
 		} catch (Throwable t) {
 			Dialogs.showErrorDialog(null, "An uncaught exception was thrown in the render loop. Mav will now exit.", t);
+			audioManager.destroy();
 		}
 	}
 
@@ -255,7 +257,6 @@ public class Mav {
 				RenderState.idle = false;
 				if (personality instanceof PolygonPersonality) {
 					((PolygonPersonality)personality).targetPulse = (audioManager.getSink().getLevel()/80f);
-					System.out.println(((PolygonPersonality)personality).targetPulse);
 				}
 			} else {
 				RenderState.idle = true;

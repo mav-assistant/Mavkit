@@ -26,17 +26,11 @@ public class GoogleScreen extends InputScreen {
 		if (k == Keyboard.KEY_RETURN) {
 			String str = tf.getText();
 			if (Strings.similarity(str.toLowerCase(), "yes") > 0.6) {
-				try {
-					Mav.ttsInterface.say("Okay. I'll need you to get a Google API key.");
-				} catch (SynthesisException e) {
-					// TODO
-					e.printStackTrace();
-				}
 				if (Desktop.isDesktopSupported()) {
 					try {
 						Desktop.getDesktop().browse(new URI("https://mav.gameminers.com/using-google.html"));
 						try {
-							Mav.ttsInterface.say("I've opened a page on my website explaining how to do this.");
+							Mav.ttsInterface.say("Okay. I'll need you to get a Google API key. I've opened a page on my website explaining how to do this.");
 						} catch (SynthesisException e) {
 							// TODO
 							e.printStackTrace();
@@ -49,7 +43,7 @@ public class GoogleScreen extends InputScreen {
 					}
 				}
 				try {
-					Mav.ttsInterface.say("I can't open your browser, so you'll need to go to my site yourself. Near the bottom is a link titled 'Using Google'. That page explains how to get an API key.");
+					Mav.ttsInterface.say("Okay. I'll need you to get a Google API key. I can't open your browser, so you'll need to go to my site yourself. Near the bottom is a link titled 'Using Google'. That page explains how to get an API key.");
 				} catch (SynthesisException e) {
 					// TODO
 					e.printStackTrace();

@@ -91,7 +91,7 @@ public class ColorScreen extends InputScreen {
 				}
 			} else {
 				try {
-					Mav.ttsInterface.say("Do you want to use Google services? This can help me better understand you, but it sends everything you say to Google.");
+					Mav.ttsInterface.say("Okay. Do you want to use Google services? This can help me better understand you, but it sends everything you say to Google.");
 				} catch (SynthesisException e) {
 					// TODO
 					e.printStackTrace();
