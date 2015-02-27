@@ -27,7 +27,6 @@ public class TrianglePersonality extends PolygonPersonality {
 	}
 	@Override
 	public void renderForeground(float diameter) {
-		diameter *= 0.9f;
 		GL11.glTranslatef(0, (0.3f-bgLum)*((Display.getHeight()/2f)-10), 0);
 		diameter *= Math.max(1.0f, (0.3f-bgLum)*6f);
 		setup();

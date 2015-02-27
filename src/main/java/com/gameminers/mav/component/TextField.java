@@ -34,6 +34,11 @@ public class TextField extends Component {
 	private String str = "";
 	@Override
 	public void doRender() {
+		if (viewPos > str.length()) {
+			viewPos = str.length();
+		} else if (viewPos < 0) {
+			viewPos = 0;
+		}
 		frames++;
 		float[] fg = RenderState.getColor(0.8f);
 		float[] bg = RenderState.getColor(0.3f);

@@ -91,7 +91,11 @@ public class ColorScreen extends InputScreen {
 				}
 			} else {
 				try {
-					Mav.ttsInterface.say("Okay. Do you want to use Google services? This can help me better understand you, but it sends everything you say to Google.");
+					String colorSaying = "Okay, from now on I'll use "+prettifyColorName(matched);
+					if (matched.equals("teal")) {
+						colorSaying = "Okay, I'll continue to use teal.";
+					}
+					Mav.ttsInterface.say(colorSaying+". Next, do you want to use Google services? This can help me better understand you, but it sends everything you say to Google.");
 				} catch (SynthesisException e) {
 					// TODO
 					e.printStackTrace();

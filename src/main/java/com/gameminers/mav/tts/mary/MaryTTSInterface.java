@@ -76,7 +76,9 @@ public class MaryTTSInterface implements TTSInterface {
 				.replace("Can't", "Cant")
 				.replace("can't", "cant")
 				.replace("Know", "No") // 'know' is pronounced correctly, but causes a strange pause
-				.replace("know", "no"));
+				.replace("know", "no")
+				.replace("Chartreuse", "Sh'art-trooce")
+				.replace("chartreuse", "sh'art-trooce"));
 		Mav.audioManager.play(audio);
 	}
 
