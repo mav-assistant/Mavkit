@@ -27,6 +27,7 @@ public class TrianglePersonality extends PolygonPersonality {
 	}
 	@Override
 	public void renderForeground(float diameter) {
+		diameter *= 0.9f;
 		GL11.glTranslatef(0, (0.3f-bgLum)*((Display.getHeight()/2f)-10), 0);
 		diameter *= Math.max(1.0f, (0.3f-bgLum)*6f);
 		setup();
@@ -38,4 +39,15 @@ public class TrianglePersonality extends PolygonPersonality {
 		Rendering.drawTriangle(0, 0, radius*0.7f, bg[0], bg[1], bg[2], 1, 1f);
 	}
 
+	@Override
+	public void renderIconForeground(int size) {
+		GL11.glTranslatef(0, -8, 0);
+		float radius = size/2f;
+		float[] bg = RenderState.getColor(bgLum);
+		float[] fg = RenderState.getColor(0.8f);
+		Rendering.drawTriangle(0, 0, radius, fg[0], fg[1], fg[2], 0.5f, 0);
+		Rendering.drawTriangle(0, 0, radius*0.7f, fg[0], fg[1], fg[2], 1, 0.5f);
+		Rendering.drawTriangle(0, 0, radius*0.4f, bg[0], bg[1], bg[2], 1, 1f);
+	}
+	
 }

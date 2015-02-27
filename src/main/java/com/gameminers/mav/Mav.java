@@ -34,6 +34,7 @@ import com.gameminers.mav.personality.Personality;
 import com.gameminers.mav.personality.poly.PolygonPersonality;
 import com.gameminers.mav.personality.poly.TrianglePersonality;
 import com.gameminers.mav.render.Fonts;
+import com.gameminers.mav.render.IconRenderer;
 import com.gameminers.mav.render.PersonalityRenderer;
 import com.gameminers.mav.render.RenderState;
 import com.gameminers.mav.render.Rendering;
@@ -60,9 +61,10 @@ public class Mav {
 
 	public static final PersonalityRenderer personalityRenderer = new PersonalityRenderer();
 	public static final AudioManager audioManager = new AudioManager();
+	public static final IconRenderer iconRenderer = new IconRenderer();
 	
 	public static Personality personality = new TrianglePersonality();
-
+	
 	public static long totalFrameCounter = 0;
 	private static int fadeFrames = 0;
 	private static int stopFrames = 0;
@@ -101,6 +103,7 @@ public class Mav {
 		if (voiceThread != null) {
 			voiceThread.interrupt();
 		}
+		iconRenderer.finish();
 		run = false;
 	}
 
@@ -138,6 +141,7 @@ public class Mav {
 		}
 		try {
 			Thread.currentThread().setName("Render thread");
+			iconRenderer.start();
 			Rendering.setUpGL();
 			RenderState.text = "\u00A7LHi! I'm Mav.\nI don't know who you are,\nso let's fix that.\n\nFirst off, what's your name?\n\u00A7sClick inside the box to start typing.\n\u00A7sPress Enter when you're finished.";
 			currentScreen = new EnterNameScreen(false);
@@ -146,7 +150,7 @@ public class Mav {
 			voiceThread.start();*/
 			while (render) {
 				long start = System.nanoTime();
-				Rendering.beforeFrame();
+				Rendering.beforeFrame(Display.getWidth(), Display.getHeight());
 				RenderState.update();
 				processInput();
 				doRender();
@@ -232,7 +236,7 @@ public class Mav {
 
 	private static void drawBasicScreen(String s, float dim) {
 		Rendering.setUpGL();
-		Rendering.beforeFrame();
+		Rendering.beforeFrame(Display.getWidth(), Display.getHeight());
 		GL11.glClearColor(0, 0, 0, 1);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 		Screen.lightFont[2].drawString((Display.getWidth()/2)-(Screen.lightFont[2].getWidth(s)/2), 160, s, Color.white);
@@ -245,7 +249,7 @@ public class Mav {
 	
 	private static void doRender() {
 		GL11.glPushMatrix();
-			if (audioManager.getSink().getLevel() == 0) {
+			if (audioManager.getSink().getLevel() <= 5) {
 				if (silentFrames == 0 && personality instanceof PolygonPersonality) {
 					((PolygonPersonality)personality).calm();
 				}

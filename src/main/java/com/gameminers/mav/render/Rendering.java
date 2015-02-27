@@ -105,13 +105,13 @@ public class Rendering {
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 	}
 	
-	public static void beforeFrame() {
-		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
+	public static void beforeFrame(int width, int height) {
+		GL11.glViewport(0, 0, width, height);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, Display.getWidth(), Display.getHeight(), 0, 10, -1);
+		GL11.glOrtho(0, width, height, 0, 10, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 	}
 	
