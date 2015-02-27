@@ -1,8 +1,4 @@
 /*
- *	Constants.java
- */
-
-/*
  * Copyright (c) 2004 by Florian Bomers
  * All rights reserved.
  *

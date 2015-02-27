@@ -67,13 +67,12 @@ applicationDistribution.exclude {
 
 license {
 	header file('HEADER')
-	exclude '*.png'
+	excludes(["src/main/resources/**/*.*"])
 	sourceSets = project.sourceSets
 	ignoreFailures false
 	strictCheck true
-	mapping {
-		java = 'SLASHSTAR_STYLE'
-	}
+	skipExistingHeaders true
+	mapping("java", "SLASHSTAR_STYLE")
 }
 
 mainClassName = "com.gameminers.mav.Mav"

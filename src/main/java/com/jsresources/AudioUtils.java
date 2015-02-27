@@ -1,8 +1,4 @@
 /*
- *	AudioUtils.java
- */
-
-/*
  * Copyright (c) 2001,2004 by Florian Bomers
  * All rights reserved.
  *
