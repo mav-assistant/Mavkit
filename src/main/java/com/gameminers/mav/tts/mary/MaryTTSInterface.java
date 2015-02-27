@@ -71,10 +71,12 @@ public class MaryTTSInterface implements TTSInterface {
 				.replace("Don't", "Dont")
 				.replace("Does", "duhz")
 				.replace("does", "duhz")
-				.replace("Color", "Koler")
-				.replace("color", "koler")
+				.replace("Color", "Ka-ler")
+				.replace("color", "ka-ler")
 				.replace("Can't", "Cant")
-				.replace("can't", "cant"));
+				.replace("can't", "cant")
+				.replace("Know", "No") // 'know' is pronounced correctly, but causes a strange pause
+				.replace("know", "no"));
 		Mav.audioManager.play(audio);
 	}
 
