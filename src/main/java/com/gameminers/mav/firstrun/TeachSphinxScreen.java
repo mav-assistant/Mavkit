@@ -6,12 +6,13 @@ import com.gameminers.mav.screen.Screen;
 public class TeachSphinxScreen extends Screen {
 
 	public TeachSphinxScreen() {
-		RenderState.setText("\u00A7LRead this aloud:\n0 1 2 3 4 5 6 7 8 9");
+		RenderState.setText("\u00A7LGetting ready...");
+		new TeachSphinxThread().start();
 	}
 	
 	@Override
 	public void onKeyDown(int k, char c, long nanos) {
-
+		
 	}
 
 	@Override

@@ -111,7 +111,7 @@ public class Rendering {
 
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, width, height, 0, 10, -1);
+		GL11.glOrtho(0, width, height, 0, 100, -100);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 	}
 	

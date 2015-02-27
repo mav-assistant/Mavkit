@@ -28,7 +28,10 @@ public class PersonalityRenderer {
 		float w = Display.getWidth()/2f;
 		GL11.glPushMatrix();
 			Mav.personality.renderBackground();
-			GL11.glTranslatef(Display.getWidth()/2f, 10+(w/2f), 0);
+			//// This code was originally a test to see how bad the overdraw was, but it looks pretty damn cool.
+			//// TODO, implement
+			//GL11.glRotatef(30f, 0.5f, 1.0f, 0f);
+			GL11.glTranslatef(Display.getWidth()/2f, 10+(w/2f), 50);
 			Mav.personality.renderForeground(w*0.9f);
 		GL11.glPopMatrix();
 		if (Mav.personality.renderScreen()) {

@@ -1,0 +1,6 @@
+#JSGF V1.0;
+
+grammar default;
+
+public <hey> = ( hey | yo ) mav;
+public <hello> = ( hello | hi ) mav;

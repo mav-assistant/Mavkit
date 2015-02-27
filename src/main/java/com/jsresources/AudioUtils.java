@@ -38,6 +38,7 @@ import static com.jsresources.Constants.FORMAT_CODE_CD;
 import static com.jsresources.Constants.FORMAT_CODE_FM;
 import static com.jsresources.Constants.FORMAT_CODE_GSM;
 import static com.jsresources.Constants.FORMAT_CODE_TELEPHONE;
+import static com.jsresources.Constants.FORMAT_CODE_SPHINX;
 
 import java.io.InputStream;
 
@@ -51,7 +52,8 @@ public class AudioUtils {
 			44100.0f, // CD
 			22050.0f, // FM
 			8000.0f, // Telephone
-			8000.0f // GSM
+			8000.0f, // GSM
+			16000.0f // Sphinx
 	};
 
 	public static long bytes2millis(long bytes, AudioFormat format) {
@@ -85,6 +87,13 @@ public class AudioUtils {
 					1, // channels
 					2, // frameSize
 					44100.0f, // frameRate
+					true); // bigEndian
+		else if (formatCode == FORMAT_CODE_SPHINX)
+			return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 16000.0f, // sampleRate
+					16, // sampleSizeInBits
+					1, // channels
+					2, // frameSize
+					16000.0f, // frameRate
 					true); // bigEndian
 		else if (formatCode == FORMAT_CODE_FM)
 			return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 22050.0f, // sampleRate

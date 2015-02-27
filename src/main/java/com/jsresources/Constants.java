@@ -47,15 +47,7 @@ public class Constants {
 	public static final int FORMAT_CODE_FM = 2;
 	public static final int FORMAT_CODE_TELEPHONE = 3;
 	public static final int FORMAT_CODE_GSM = 4;
-
-	public static final String[] FORMAT_NAMES = {
-			"Cell phone GSM (13.2KBit/s - Modem)",
-			"Telephone ulaw (64KBit/s - ISDN)",
-			"FM quality mono (352.8KBit/s - ADSL)",
-			"CD quality mono (705.6KBit/s - LAN)" };
-
-	public static final int[] FORMAT_CODES = { FORMAT_CODE_GSM,
-			FORMAT_CODE_TELEPHONE, FORMAT_CODE_FM, FORMAT_CODE_CD };
+	public static final int FORMAT_CODE_SPHINX = 5;
 
 	public static final int[] BUFFER_SIZE_MILLIS = { 30, 40, 50, 70, 85, 100,
 			130, 150, 180, 220, 400 };

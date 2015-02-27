@@ -20,8 +20,6 @@ import java.util.BitSet;
 
 import javax.swing.UIManager;
 
-import marytts.exceptions.SynthesisException;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -32,7 +30,6 @@ import com.gameminers.mav.audio.AudioManager;
 import com.gameminers.mav.firstrun.EnterNameScreen;
 import com.gameminers.mav.personality.Personality;
 import com.gameminers.mav.personality.poly.PolygonPersonality;
-import com.gameminers.mav.personality.poly.TrianglePersonality;
 import com.gameminers.mav.render.Fonts;
 import com.gameminers.mav.render.IconRenderer;
 import com.gameminers.mav.render.PersonalityRenderer;
@@ -63,11 +60,13 @@ public class Mav {
 	public static final AudioManager audioManager = new AudioManager();
 	public static final IconRenderer iconRenderer = new IconRenderer();
 	
-	public static Personality personality = new TrianglePersonality();
+	public static Personality personality = new PolygonPersonality(3);
 	
 	public static long totalFrameCounter = 0;
 	private static int fadeFrames = 0;
 	private static int stopFrames = 0;
+	
+	private static int goodbye;
 	
 	public static String userName;
 	public static String phoneticUserName;
@@ -77,9 +76,12 @@ public class Mav {
 	
 	private static BitSet mouseButtonStates;
 	
-	private static int silentFrames = 0;
+	public static int silentFrames = 0;
+	public static int silentListenFrames = 0;
 
 	public static long lastInputEvent = System.currentTimeMillis();
+
+	public static boolean listening = false;
 
 	public static void stop() {
 		if (!run) return;
@@ -94,11 +96,7 @@ public class Mav {
 			((PolygonPersonality)personality).targetPulse = 0.075f;
 		}
 		if (ttsInterface != null) {
-			try {
-				ttsInterface.sayWithEmotion("<emotionml version='1.0' xmlns='http://www.w3.org/2009/10/emotionml' category-set='http://www.w3.org/TR/emotion-voc/xml#everyday-categories'><emotion><category name='sad'/>Goodbye.</emotion></emotionml>", "Goodbye.");
-			} catch (SynthesisException e) {
-				e.printStackTrace();
-			}
+			ttsInterface.sayPreparedSentence(goodbye);
 		}
 		if (voiceThread != null) {
 			voiceThread.interrupt();
@@ -130,6 +128,7 @@ public class Mav {
 			}
 			drawBasicScreen("Initializing MARY", 0.0f);
 			ttsInterface = new MaryTTSInterface();
+			goodbye = ttsInterface.prepare("Goodbye.");
 			drawBasicScreen("Setting up audio", 0.0f);
 			audioManager.init();
 			drawBasicScreen("Setting up input", 0.0f);
@@ -249,7 +248,7 @@ public class Mav {
 	
 	private static void doRender() {
 		GL11.glPushMatrix();
-			if (audioManager.getSink().getLevel() <= 5) {
+			if (audioManager.getSink().getLevel() <= 8) {
 				if (silentFrames == 0 && personality instanceof PolygonPersonality) {
 					((PolygonPersonality)personality).calm();
 				}
@@ -260,10 +259,24 @@ public class Mav {
 			if (silentFrames < 10) {
 				RenderState.idle = false;
 				if (personality instanceof PolygonPersonality) {
-					((PolygonPersonality)personality).targetPulse = (audioManager.getSink().getLevel()/80f);
+					((PolygonPersonality)personality).targetPulse = (audioManager.getSink().getLevel()/64f);
 				}
 			} else {
 				RenderState.idle = true;
+			}
+			
+			if (listening) {
+				if (audioManager.getSource().getLevel() <= 8) {
+					silentListenFrames++;
+				} else {
+					silentListenFrames = 0;
+				}
+				if (silentListenFrames < 10) {
+					RenderState.idle = false;
+					if (personality instanceof PolygonPersonality) {
+						((PolygonPersonality)personality).targetInnerPulse = (audioManager.getSource().getLevel()/64f);
+					}
+				}
 			}
 			personalityRenderer.render();
 			if (currentScreen != null && personality.renderScreen()) {
@@ -272,6 +285,8 @@ public class Mav {
 				GL11.glPopMatrix();
 			}
 			personality.postRender();
+			String size = Display.getWidth()+"x"+Display.getHeight();
+			Screen.baseFont[0].drawString((Display.getWidth()-Screen.baseFont[0].getWidth(size))-8, 8, size);
 			Screen.baseFont[0].drawString(8, 8, fps+" FPS");
 			Screen.baseFont[0].drawString(8, 24, (nspf/1000000f)+" ms/f");
 			Screen.baseFont[0].drawString(8, 40, (((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1024)/1024f)+"MiB");

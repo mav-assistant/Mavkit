@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.sound.sampled.AudioInputStream;
-
 import marytts.LocalMaryInterface;
 import marytts.MaryInterface;
 import marytts.exceptions.MaryConfigurationException;
@@ -32,6 +31,8 @@ import com.gameminers.mav.tts.TTSInterface;
 public class MaryTTSInterface implements TTSInterface {
 	private MaryInterface mary;
 	private Map<Character, String> letterNames = new HashMap<>();
+	private Map<Integer, AudioInputStream> preparedSentences = new HashMap<>();
+	private int sentenceId = 0;
 	public MaryTTSInterface() throws MaryConfigurationException {
 		mary = new LocalMaryInterface();
 		letterNames.put('A', "Ay");
@@ -64,9 +65,13 @@ public class MaryTTSInterface implements TTSInterface {
 	
 	@Override
 	public void say(String msg) throws SynthesisException {
+		Mav.audioManager.play(generateAudio(msg));
+	}
+
+	private AudioInputStream generateAudio(String msg) throws SynthesisException {
 		mary.setInputType("TEXT");
 		// MARY TTS is a bit glitchy at the best of times, so we have these special handicaps for common words that it doesn't say correctly.
-		AudioInputStream audio = mary.generateAudio(abbrev(msg)
+		return mary.generateAudio(abbrev(msg)
 				.replace("don't", "dont")
 				.replace("Don't", "Dont")
 				.replace("Does", "duhz")
@@ -79,7 +84,6 @@ public class MaryTTSInterface implements TTSInterface {
 				.replace("know", "no")
 				.replace("Chartreuse", "Sh'art-trooce")
 				.replace("chartreuse", "sh'art-trooce"));
-		Mav.audioManager.play(audio);
 	}
 
 	private String abbrev(String msg) {
@@ -120,6 +124,25 @@ public class MaryTTSInterface implements TTSInterface {
 		} catch (Exception e) {
 			say(plaintextFallback);
 		}
+	}
+
+	@Override
+	public int prepare(String msg) throws SynthesisException {
+		sentenceId++;
+		preparedSentences.put(sentenceId, generateAudio(msg));
+		return sentenceId;
+	}
+
+	@Override
+	public void sayPreparedSentence(int sentence) {
+		if (preparedSentences.containsKey(sentence)) {
+			try {
+				Mav.audioManager.play(preparedSentences.get(sentence));
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		} else
+			throw new IndexOutOfBoundsException(sentence+" was not prepared");
 	}
 
 }

@@ -27,7 +27,7 @@ public class RenderState {
 	public static float targetDim = 0.0f;
 	public static float lagDim = 0.3f;
 	
-	public static float[] lagRGB = {0, 1.0f, 0.5f};
+	public static float[] lagRGB = {0.7f, 0.7f, 0.7f};
 	
 	public static boolean idle = true;
 	public static boolean attention = false;

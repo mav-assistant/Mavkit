@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Mixer;
@@ -31,15 +30,12 @@ import org.apache.commons.io.IOUtils;
 
 import com.jsresources.AudioCapture;
 import com.jsresources.AudioPlayback;
-import com.jsresources.AudioUtils;
 import com.jsresources.Constants;
 
 public class AudioManager {
 	private Mixer mixer;
 	private AudioPlayback sink;
 	private AudioCapture source;
-	
-	private AudioFormat format;
 	
 	private Map<String, byte[]> clips = new HashMap<>();
 	
@@ -50,13 +46,9 @@ public class AudioManager {
 		loadClip("notif2");
 		loadClip("notif3");
 		loadClip("notif4");
-		try {
-			format = AudioUtils.getNetAudioFormat(Constants.FORMAT_CODE_CD);
-		} catch (UnsupportedAudioFileException e1) {
-			e1.printStackTrace();
-		}
+		loadClip("notif5");
 		sink = new AudioPlayback(Constants.FORMAT_CODE_CD, mixer, Constants.BUFFER_SIZE_MILLIS[Constants.BUFFER_SIZE_INDEX_DEFAULT]);
-		source = new AudioCapture(Constants.FORMAT_CODE_CD, mixer, Constants.BUFFER_SIZE_MILLIS[Constants.BUFFER_SIZE_INDEX_DEFAULT]);
+		source = new AudioCapture(Constants.FORMAT_CODE_SPHINX, mixer, Constants.BUFFER_SIZE_MILLIS[Constants.BUFFER_SIZE_INDEX_DEFAULT]);
 		try {
 			sink.open();
 		} catch (Exception e) {

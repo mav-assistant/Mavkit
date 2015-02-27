@@ -18,7 +18,7 @@ import com.gameminers.mav.screen.InputScreen;
 public class GoogleScreen extends InputScreen {
 
 	public GoogleScreen() {
-		RenderState.setText("\u00A7LDo you want to use\n\u00A7LGoogle services?\nThis can help me better\nunderstand you, but it\nsends everything you say\nto Google.\n\u00A7sEnter 'Yes' or 'No'.");
+		RenderState.setText("\u00A7LDo you want to use\n\u00A7LGoogle services?\nThis can help me better\nunderstand you, but it\nsends everything you\nsay to Google.\n\u00A7sEnter 'Yes' or 'No'.");
 	}
 	
 	@Override

@@ -1,5 +1,0 @@
-#JSGF V1.0;
-
-grammar hey;
-
-public <hey> = ( hey | hi | yo ) mav;

@@ -15,7 +15,7 @@
  */
 package com.gameminers.mav;
 
-import com.gameminers.mav.personality.poly.TrianglePersonality;
+import com.gameminers.mav.personality.poly.PolygonPersonality;
 import com.gameminers.mav.render.RenderState;
 
 import edu.cmu.sphinx.api.Configuration;
@@ -33,8 +33,8 @@ public class VoiceThread extends Thread {
 			RenderState.setText("\u00A7LJust a moment...");
 			RenderState.idle = false;
 			RenderState.targetHue = 60;
-			if (Mav.personality instanceof TrianglePersonality) {
-				((TrianglePersonality)Mav.personality).targetAngle = 135f;
+			if (Mav.personality instanceof PolygonPersonality) {
+				((PolygonPersonality)Mav.personality).targetAngle = 135f;
 			}
 			Configuration config = new Configuration();
 			config.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.dmp");
@@ -55,8 +55,8 @@ public class VoiceThread extends Thread {
 						RenderState.setText("\u00A7LYes?");
 						RenderState.idle = false;
 						RenderState.targetHue = 240;
-						if (Mav.personality instanceof TrianglePersonality) {
-							((TrianglePersonality)Mav.personality).targetAngle = 270f;
+						if (Mav.personality instanceof PolygonPersonality) {
+							((PolygonPersonality)Mav.personality).targetAngle = 270f;
 						}
 					}
 				}

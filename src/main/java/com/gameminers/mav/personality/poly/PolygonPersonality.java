@@ -34,9 +34,11 @@ public class PolygonPersonality implements Personality {
 	public long frameCount;
 	public float angle;
 	public float pulse;
+	public float innerPulse;
 	
 	public float targetAngle;
 	public float targetPulse;
+	public float targetInnerPulse;
 	
 	protected float bgLum = 0.3f;
 	//private int framesSinceFade = 0;
@@ -63,8 +65,10 @@ public class PolygonPersonality implements Personality {
 		float[] bg = RenderState.getColor(bgLum);
 		float[] fg = RenderState.getColor(0.8f);
 		Rendering.drawPolygon(0, 0, radius*(0.85f+(pulse*0.15f)), fg[0], fg[1], fg[2], 0.5f, sideCount, 0);
-		Rendering.drawPolygon(0, 0, radius*0.8f, fg[0], fg[1], fg[2], 1, sideCount, 0.5f);
-		Rendering.drawPolygon(0, 0, radius*0.7f, bg[0], bg[1], bg[2], 1, sideCount, 1f);
+		Rendering.drawPolygon(0, 0, radius*0.8f, fg[0], fg[1], fg[2], 1, sideCount, 5f);
+		Rendering.drawPolygon(0, 0, radius*0.7f, bg[0], bg[1], bg[2], 1, sideCount, 10f);
+		Rendering.drawPolygon(0, 0, radius*0.7f, fg[0], fg[1], fg[2], 0.5f, sideCount, 15f);
+		Rendering.drawPolygon(0, 0, radius*(0.7f-(innerPulse*0.15f)), bg[0], bg[1], bg[2], 1, sideCount, 20f);
 	}
 	@Override
 	public void postRender() {
@@ -85,6 +89,7 @@ public class PolygonPersonality implements Personality {
 			targetPulse = (float)(Math.sin(frameCount/30f)+1)/2f;
 		}
 		pulse = Rendering.tend(pulse, targetPulse, 2f);
+		innerPulse = Rendering.tend(innerPulse, targetInnerPulse, 2f);
 		GL11.glRotatef(angle, 0f, 0f, 1f);
 	}
 	public int getSideCount() {
