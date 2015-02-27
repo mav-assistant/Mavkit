@@ -37,7 +37,7 @@ public class ColorScreen extends InputScreen {
 		colors.put("pink", 300f);
 	}
 	public ColorScreen() {
-		RenderState.text = "\u00A7LOkay, "+Mav.userName+"\nWhat is your favorite\ncolor?\n\n\u00A7sType a color below to preview, press Enter\n\u00A7sto continue.\n\u00A7sThis will be the color of my interface.\n\u00A7s(e.g. teal, green)";
+		RenderState.setText("\u00A7LOkay, "+Mav.userName+"\nWhat is your favorite\ncolor?\n\n\u00A7sType a color below to preview, press Enter\n\u00A7sto continue.\n\u00A7sThis will be the color of my interface.\n\u00A7s(e.g. teal, green)");
 	}
 	
 	@Override

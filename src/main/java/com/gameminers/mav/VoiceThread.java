@@ -30,7 +30,7 @@ public class VoiceThread extends Thread {
 	@Override
 	public void run() {
 		try {
-			RenderState.text = "\u00A7LJust a moment...";
+			RenderState.setText("\u00A7LJust a moment...");
 			RenderState.idle = false;
 			RenderState.targetHue = 60;
 			if (Mav.personality instanceof TrianglePersonality) {
@@ -44,7 +44,7 @@ public class VoiceThread extends Thread {
 			config.setGrammarName("hey");
 			config.setUseGrammar(true);
 			LiveSpeechRecognizer live = new LiveSpeechRecognizer(config);
-			RenderState.text = "\u00A7LWaiting...\n\u00A7s(Say 'Hey, Mav')";
+			RenderState.setText("\u00A7LWaiting...\n\u00A7s(Say 'Hey, Mav')");
 			RenderState.targetHue = 120;
 			RenderState.idle = true;
 			live.startRecognition(false);
@@ -52,7 +52,7 @@ public class VoiceThread extends Thread {
 				SpeechResult result = live.getResult();
 				if (result != null) {
 					if (result.getHypothesis().equals("hey mav")) {
-						RenderState.text = "\u00A7LYes?";
+						RenderState.setText("\u00A7LYes?");
 						RenderState.idle = false;
 						RenderState.targetHue = 240;
 						if (Mav.personality instanceof TrianglePersonality) {

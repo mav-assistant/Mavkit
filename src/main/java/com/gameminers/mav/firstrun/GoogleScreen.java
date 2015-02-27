@@ -18,7 +18,7 @@ import com.gameminers.mav.screen.InputScreen;
 public class GoogleScreen extends InputScreen {
 
 	public GoogleScreen() {
-		RenderState.text = "\u00A7LDo you want to use\n\u00A7LGoogle services?\nThis can help me better\nunderstand you, but it\nsends everything you say\nto Google.\n\u00A7sEnter 'Yes' or 'No'.";
+		RenderState.setText("\u00A7LDo you want to use\n\u00A7LGoogle services?\nThis can help me better\nunderstand you, but it\nsends everything you say\nto Google.\n\u00A7sEnter 'Yes' or 'No'.");
 	}
 	
 	@Override
@@ -30,7 +30,7 @@ public class GoogleScreen extends InputScreen {
 					try {
 						Desktop.getDesktop().browse(new URI("https://mav.gameminers.com/using-google.html"));
 						try {
-							Mav.ttsInterface.say("Okay. I'll need you to get a Google API key. I've opened a page on my website explaining how to do this.");
+							Mav.ttsInterface.say("Okay, then I'll need you to get a Google API key. I've opened a page on my website explaining how to do this.");
 						} catch (SynthesisException e) {
 							// TODO
 							e.printStackTrace();
@@ -43,7 +43,7 @@ public class GoogleScreen extends InputScreen {
 					}
 				}
 				try {
-					Mav.ttsInterface.say("Okay. I'll need you to get a Google API key. I can't open your browser, so you'll need to go to my site yourself. Near the bottom is a link titled 'Using Google'. That page explains how to get an API key.");
+					Mav.ttsInterface.say("Okay, then I'll need you to get a Google API key. I can't open your browser, so you'll need to go to my site yourself. Near the bottom is a link titled 'Using Google'. That page explains how to get an API key.");
 				} catch (SynthesisException e) {
 					// TODO
 					e.printStackTrace();

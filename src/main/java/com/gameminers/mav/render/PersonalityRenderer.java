@@ -33,7 +33,7 @@ public class PersonalityRenderer {
 		GL11.glPopMatrix();
 		if (Mav.personality.renderScreen()) {
 			int y = (int) w;
-			String[] split = RenderState.text.split("\n");
+			String[] split = RenderState.getLines();
 			for (String s : split) {
 				TrueTypeFont font = Screen.lightFont[1];
 				if (s.startsWith("\u00A7l")) {

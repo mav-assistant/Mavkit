@@ -31,7 +31,8 @@ public class RenderState {
 	
 	public static boolean idle = true;
 	public static boolean attention = false;
-	public static String text = "What can I do for you?";
+	private static String text;
+	private static String[] lines;
 	
 	public static float[] getColor(float lum) {
 		return new float[] { lagRGB[0]*lum, lagRGB[1]*lum, lagRGB[2]*lum };
@@ -44,6 +45,19 @@ public class RenderState {
 		lagRGB[2] = Rendering.tend(lagRGB[2], targetRGB[2], 16f);
 		lagSat = Rendering.tend(lagSat, targetSat, 24f);
 		lagDim = Rendering.tend(lagDim, targetDim, 32f);
+	}
+
+	public static String[] getLines() {
+		return lines;
+	}
+	
+	public static String getText() {
+		return text;
+	}
+
+	public static void setText(String text) {
+		RenderState.text = text;
+		lines = text.split("\n");
 	}
 
 }

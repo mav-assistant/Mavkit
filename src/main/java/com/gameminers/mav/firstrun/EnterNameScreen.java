@@ -28,7 +28,7 @@ public class EnterNameScreen extends InputScreen {
 	public EnterNameScreen(boolean phonetic) {
 		this.phonetic = phonetic;
 		if (phonetic) {
-			RenderState.text = "\u00A7LOkay, "+Mav.userName+"\nType your name again\nphonetically.\n\n\u00A7s(e.g. Ay-sen)\n\u00A7sPress Enter when finished.";
+			RenderState.setText("\u00A7LOkay, "+Mav.userName+"\nType your name again\nphonetically.\n\n\u00A7s(e.g. Ay-sen)\n\u00A7sPress Enter when finished.");
 		}
 	}
 	@Override
@@ -53,7 +53,7 @@ public class EnterNameScreen extends InputScreen {
 				Mav.userName = str;
 			}
 			Mav.currentScreen = new VerifyPronunciationScreen();
-			RenderState.text = "\u00A7LOkay, "+Mav.userName+"\nDoes this sound correct?\n\n\u00A7sEnter 'Yes' or 'No' to continue\n\u00A7sEnter 'Repeat' to hear me say it again";
+			RenderState.setText("\u00A7LOkay, "+Mav.userName+"\nDoes this sound correct?\n\n\u00A7sEnter 'Yes' or 'No' to continue\n\u00A7sEnter 'Repeat' to hear me say it again");
 			try {
 				Mav.ttsInterface.say("Okay, "+Mav.phoneticUserName+". Does that sound correct?");
 			} catch (SynthesisException e) {

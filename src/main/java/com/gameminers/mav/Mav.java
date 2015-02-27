@@ -85,7 +85,7 @@ public class Mav {
 		if (!run) return;
 		RenderState.targetSat = 0;
 		RenderState.targetDim = 0.3f;
-		RenderState.text = "\u00A7LGoodbye.";
+		RenderState.setText("\u00A7LGoodbye.");
 		RenderState.idle = false;
 		RenderState.attention = true;
 		currentScreen = null;
@@ -143,7 +143,7 @@ public class Mav {
 			Thread.currentThread().setName("Render thread");
 			iconRenderer.start();
 			Rendering.setUpGL();
-			RenderState.text = "\u00A7LHi! I'm Mav.\nI don't know who you are,\nso let's fix that.\n\nFirst off, what's your name?\n\u00A7sClick inside the box to start typing.\n\u00A7sPress Enter when you're finished.";
+			RenderState.setText("\u00A7LHi! I'm Mav.\nI don't know who you are,\nso let's fix that.\n\nFirst off, what's your name?\n\u00A7sClick inside the box to start typing.\n\u00A7sPress Enter when you're finished.");
 			currentScreen = new EnterNameScreen(false);
 			ttsInterface.sayWithEmotion("<emotionml version='1.0' xmlns='http://www.w3.org/2009/10/emotionml' category-set='http://www.w3.org/TR/emotion-voc/xml#everyday-categories'><emotion><category name='happy'/>Hi! I'm Mav.</emotion>I dont know who you are, so let's fix that.<emotion><category name='interested'/>First off, what is your name?</emotion></emotionml>", "Hi! I'm Mav. I dont know who you are, so let's fix that. First off, what is your name?");
 			/*voiceThread = new VoiceThread();
@@ -274,8 +274,9 @@ public class Mav {
 			personality.postRender();
 			Screen.baseFont[0].drawString(8, 8, fps+" FPS");
 			Screen.baseFont[0].drawString(8, 24, (nspf/1000000f)+" ms/f");
+			Screen.baseFont[0].drawString(8, 40, (((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1024)/1024f)+"MiB");
 			if (personality instanceof PolygonPersonality) {
-				Screen.baseFont[0].drawString(8, 40, ((PolygonPersonality)personality).angle+"°");
+				Screen.baseFont[0].drawString(8, 56, ((PolygonPersonality)personality).angle+"°");
 			}
 			Rendering.drawRectangle(0, 0, Display.getWidth(), Display.getHeight(), 0, 0, 0, (fadeFrames/FADE_TIME), 1);
 		GL11.glPopMatrix();
