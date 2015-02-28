@@ -45,8 +45,10 @@ public class AudioManager {
 		loadClip("notif1");
 		loadClip("notif2");
 		loadClip("notif3");
-		loadClip("notif4");
-		loadClip("notif5");
+		loadClip("recog1");
+		loadClip("fail1");
+		loadClip("fail2");
+		loadClip("listen1");
 		sink = new AudioPlayback(Constants.FORMAT_CODE_CD, mixer, Constants.BUFFER_SIZE_MILLIS[Constants.BUFFER_SIZE_INDEX_DEFAULT]);
 		source = new AudioCapture(Constants.FORMAT_CODE_SPHINX, mixer, Constants.BUFFER_SIZE_MILLIS[Constants.BUFFER_SIZE_INDEX_DEFAULT]);
 		try {

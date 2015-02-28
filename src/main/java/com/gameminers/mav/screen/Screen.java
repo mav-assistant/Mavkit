@@ -18,13 +18,9 @@ package com.gameminers.mav.screen;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.newdawn.slick.TrueTypeFont;
-
 import com.gameminers.mav.component.Component;
 
 public abstract class Screen {
-	public static TrueTypeFont[] lightFont;
-	public static TrueTypeFont[] baseFont;
 	protected final List<Component> components = new ArrayList<>();
 	
 	public final void render() {

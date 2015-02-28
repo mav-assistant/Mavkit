@@ -20,9 +20,9 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
 import com.gameminers.mav.Mav;
+import com.gameminers.mav.render.Fonts;
 import com.gameminers.mav.render.RenderState;
 import com.gameminers.mav.render.Rendering;
-import com.gameminers.mav.screen.Screen;
 
 
 public class TextField extends Component {
@@ -59,17 +59,17 @@ public class TextField extends Component {
 		} else if (cursorPos < viewPos) {
 			viewPos = cursorPos;
 		}
-		int len = Screen.baseFont[1].getWidth(trimmedText);
+		int len = Fonts.base[1].getWidth(trimmedText);
 		int mod = (int) (len >= width-16 ? len - (width-16) : 0);
 		if (viewPos == 0) {
 			mod = 0;
 		}
 		if (focused) {
-			Rendering.drawRectangle((8-mod)+Screen.baseFont[1].getWidth(trimmedText.substring(0, Math.min(trimmedLength, Math.max(0, cursorPos-viewPos)))), 6, 2, height-12, 1, 1, 1, (1.0f-((frames%25)/40f)) / (Display.isActive() ? 1f : 4f), 0.2f);
+			Rendering.drawRectangle((8-mod)+Fonts.base[1].getWidth(trimmedText.substring(0, Math.min(trimmedLength, Math.max(0, cursorPos-viewPos)))), 6, 2, height-12, 1, 1, 1, (1.0f-((frames%25)/40f)) / (Display.isActive() ? 1f : 4f), 0.2f);
 		}
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
 		GL11.glScissor((int)x+8, Display.getHeight()-(int)(y+height), (int)width-16, (int)height);
-		Screen.baseFont[1].drawString(8-mod, 1, trimmedText);
+		Fonts.base[1].drawString(8-mod, 1, trimmedText);
 		GL11.glDisable(GL11.GL_SCISSOR_TEST);
 	}
 
@@ -81,7 +81,7 @@ public class TextField extends Component {
 		do {
 			String ch = Character.toString(str.charAt(idx));
 			sb.append(ch);
-			totalWidth += Screen.baseFont[1].getWidth(ch);
+			totalWidth += Fonts.base[1].getWidth(ch);
 			idx++;
 		} while (totalWidth < width && idx < str.length());
 		return sb.toString();
@@ -96,26 +96,26 @@ public class TextField extends Component {
 					str = content.toString();
 					cursorPos--;
 				} else {
-					Mav.audioManager.playClip("notif4");
+					Mav.audioManager.playClip("fail2");
 				}
 			} else if (k == Keyboard.KEY_DELETE) {
 				if (cursorPos < content.length()) {
 					content.deleteCharAt(cursorPos);
 					str = content.toString();
 				} else {
-					Mav.audioManager.playClip("notif4");
+					Mav.audioManager.playClip("fail2");
 				}
 			} else if (k == Keyboard.KEY_LEFT) {
 				if (cursorPos > 0) {
 					cursorPos--;
 				} else {
-					Mav.audioManager.playClip("notif4");
+					Mav.audioManager.playClip("fail2");
 				}
 			} else if (k == Keyboard.KEY_RIGHT) {
 				if (cursorPos < content.length()) {
 					cursorPos++;
 				} else {
-					Mav.audioManager.playClip("notif4");
+					Mav.audioManager.playClip("fail2");
 				}
 			} else if (k == Keyboard.KEY_HOME) {
 				cursorPos = 0;

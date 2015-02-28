@@ -21,7 +21,6 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.TrueTypeFont;
 
 import com.gameminers.mav.Mav;
-import com.gameminers.mav.screen.Screen;
 
 public class PersonalityRenderer {
 	public void render() {
@@ -38,15 +37,15 @@ public class PersonalityRenderer {
 			int y = (int) w;
 			String[] split = RenderState.getLines();
 			for (String s : split) {
-				TrueTypeFont font = Screen.lightFont[1];
+				TrueTypeFont font = Fonts.light[1];
 				if (s.startsWith("\u00A7l")) {
-					font = Screen.baseFont[1];
+					font = Fonts.base[1];
 					s = s.substring(2);
 				} else if (s.startsWith("\u00A7L")) {
-					font = Screen.lightFont[2];
+					font = Fonts.light[2];
 					s = s.substring(2);
 				} else if (s.startsWith("\u00A7s")) {
-					font = Screen.lightFont[0];
+					font = Fonts.light[0];
 					s = s.substring(2);
 				}
 				font.drawString((Display.getWidth()/2)-(font.getWidth(s)/2), y, s, Color.white);

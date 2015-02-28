@@ -26,6 +26,7 @@ import org.lwjgl.opengl.Display;
 
 import com.gameminers.mav.Mav;
 import com.gameminers.mav.Strings;
+import com.gameminers.mav.render.Fonts;
 import com.gameminers.mav.render.RenderState;
 import com.gameminers.mav.screen.InputScreen;
 
@@ -61,10 +62,10 @@ public class ColorScreen extends InputScreen {
 		if (matched == null) {
 			RenderState.targetHue = 150f;
 			String str = "teal (unknown color)";
-			baseFont[0].drawString((Display.getWidth()-baseFont[0].getWidth(str))-8, Display.getHeight()-18, str);
+			Fonts.base[0].drawString((Display.getWidth()-Fonts.base[0].getWidth(str))-8, Display.getHeight()-18, str);
 		} else {
 			String str = prettifyColorName(matched);
-			baseFont[0].drawString((Display.getWidth()-baseFont[0].getWidth(str))-8, Display.getHeight()-18, str);
+			Fonts.base[0].drawString((Display.getWidth()-Fonts.base[0].getWidth(str))-8, Display.getHeight()-18, str);
 		}
 	}
 	

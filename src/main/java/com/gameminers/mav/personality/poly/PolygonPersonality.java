@@ -115,11 +115,15 @@ public class PolygonPersonality implements Personality {
 	}
 	@Override
 	public void renderIconForeground(int size) {
+		sideCount = 3;
+		if (sideCount < 4) {
+			GL11.glTranslatef(0, -8, 0);
+		}
 		float radius = size/2f;
 		float[] bg = RenderState.getColor(bgLum);
 		float[] fg = RenderState.getColor(0.8f);
-		Rendering.drawPolygon(0, 0, radius*(0.65f+(pulse*0.35f)), fg[0], fg[1], fg[2], 0.5f, sideCount, 0);
-		Rendering.drawPolygon(0, 0, radius*0.6f, fg[0], fg[1], fg[2], 1, sideCount, 0.5f);
-		Rendering.drawPolygon(0, 0, radius*0.35f, bg[0], bg[1], bg[2], 1, sideCount, 1f);
+		Rendering.drawPolygon(0, 0, radius*1.1f, fg[0], fg[1], fg[2], 0.5f, sideCount, 0);
+		Rendering.drawPolygon(0, 0, radius*0.7f, fg[0], fg[1], fg[2], 1, sideCount, 0.5f);
+		Rendering.drawPolygon(0, 0, radius*0.4f, bg[0], bg[1], bg[2], 1, sideCount, 1f);
 	}
 }

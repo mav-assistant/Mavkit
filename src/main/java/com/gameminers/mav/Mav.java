@@ -238,7 +238,7 @@ public class Mav {
 		Rendering.beforeFrame(Display.getWidth(), Display.getHeight());
 		GL11.glClearColor(0, 0, 0, 1);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-		Screen.lightFont[2].drawString((Display.getWidth()/2)-(Screen.lightFont[2].getWidth(s)/2), 160, s, Color.white);
+		Fonts.light[2].drawString((Display.getWidth()/2)-(Fonts.light[2].getWidth(s)/2), 160, s, Color.white);
 		Rendering.drawTriangle(Display.getWidth()/2f, 90, 74, 0.5f, 0.5f, 0.5f, 0.5f, 0);
 		Rendering.drawTriangle(Display.getWidth()/2f, 90, 64, 0.5f, 0.5f, 0.5f, 1, 0.5f);
 		Rendering.drawTriangle(Display.getWidth()/2f, 90, 56, 0, 0, 0, 1, 1f);
@@ -286,12 +286,12 @@ public class Mav {
 			}
 			personality.postRender();
 			String size = Display.getWidth()+"x"+Display.getHeight();
-			Screen.baseFont[0].drawString((Display.getWidth()-Screen.baseFont[0].getWidth(size))-8, 8, size);
-			Screen.baseFont[0].drawString(8, 8, fps+" FPS");
-			Screen.baseFont[0].drawString(8, 24, (nspf/1000000f)+" ms/f");
-			Screen.baseFont[0].drawString(8, 40, (((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1024)/1024f)+"MiB");
+			Fonts.base[0].drawString((Display.getWidth()-Fonts.base[0].getWidth(size))-8, 8, size);
+			Fonts.base[0].drawString(8, 8, fps+" FPS");
+			Fonts.base[0].drawString(8, 24, (nspf/1000000f)+" ms/f");
+			Fonts.base[0].drawString(8, 40, (((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1024)/1024f)+"MiB");
 			if (personality instanceof PolygonPersonality) {
-				Screen.baseFont[0].drawString(8, 56, ((PolygonPersonality)personality).angle+"°");
+				Fonts.base[0].drawString(8, 56, ((PolygonPersonality)personality).angle+"°");
 			}
 			Rendering.drawRectangle(0, 0, Display.getWidth(), Display.getHeight(), 0, 0, 0, (fadeFrames/FADE_TIME), 1);
 		GL11.glPopMatrix();

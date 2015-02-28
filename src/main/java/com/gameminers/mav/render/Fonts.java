@@ -21,33 +21,50 @@ import java.io.InputStream;
 import org.newdawn.slick.TrueTypeFont;
 
 import com.gameminers.mav.Dialogs;
-import com.gameminers.mav.screen.Screen;
 
 public class Fonts {
 
+	private static Font lightFont;
+	private static Font baseFont;
+	
+	private static Font[] lightAWT;
+	private static Font[] baseAWT;
+	
+	public static TrueTypeFont[] light;
+	public static TrueTypeFont[] base;
+	
+	public static float[] sizes = {
+		14,
+		24,
+		36,
+		48
+	};
+	
 	public static void loadFonts() {
 		try {
+			
 			InputStream baseIn = ClassLoader.getSystemResourceAsStream("resources/fonts/OpenSans-Regular.ttf");
 			InputStream lightIn = ClassLoader.getSystemResourceAsStream("resources/fonts/OpenSans-Light.ttf");
 
-			Font baseFont = Font.createFont(Font.TRUETYPE_FONT, baseIn);
-			Font lightFont = Font.createFont(Font.TRUETYPE_FONT, lightIn);
+			baseFont = Font.createFont(Font.TRUETYPE_FONT, baseIn);
+			lightFont = Font.createFont(Font.TRUETYPE_FONT, lightIn);
 
 			baseIn.close();
 			lightIn.close();
 			
-			Screen.baseFont = new TrueTypeFont[] {
-					new TrueTypeFont(baseFont.deriveFont(14.0f), true),
-					new TrueTypeFont(baseFont.deriveFont(24.0f), true),
-					new TrueTypeFont(baseFont.deriveFont(36.0f), true),
-					new TrueTypeFont(baseFont.deriveFont(48.0f), true),
-			};
-			Screen.lightFont = new TrueTypeFont[] {
-					new TrueTypeFont(lightFont.deriveFont(14.0f), true),
-					new TrueTypeFont(lightFont.deriveFont(24.0f), true),
-					new TrueTypeFont(lightFont.deriveFont(36.0f), true),
-					new TrueTypeFont(lightFont.deriveFont(48.0f), true),
-			};
+			lightAWT = new Font[sizes.length];
+			baseAWT = new Font[sizes.length];
+			
+			base = new TrueTypeFont[sizes.length];
+			light = new TrueTypeFont[sizes.length];
+			
+			for (int i = 0; i < sizes.length; i++) {
+				lightAWT[i] = lightFont.deriveFont(sizes[i]);
+				baseAWT[i] = baseFont.deriveFont(sizes[i]);
+				
+				light[i] = new TrueTypeFont(lightAWT[i], true);
+				base[i] = new TrueTypeFont(baseAWT[i], true);
+			}
 		} catch (Throwable t) {
 			Dialogs.showErrorDialog(null, "An error occurred while initializing assets. Mav will now exit.", t);
 		}
