@@ -115,7 +115,6 @@ public class PolygonPersonality implements Personality {
 	}
 	@Override
 	public void renderIconForeground(int size) {
-		sideCount = 3;
 		if (sideCount < 4) {
 			GL11.glTranslatef(0, -8, 0);
 		}

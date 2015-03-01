@@ -20,8 +20,10 @@ Goals
 
 Screenshots
 ===========
-![Waiting](http://i.imgur.com/PSYqrmt.png)
-![Responding](http://i.imgur.com/r3fC8AF.png)
+![Mav introducing herself](http://i.imgur.com/45Bf5Ow.png)
+![Mav asking the user for their favorite color](http://i.imgur.com/JTh8t1d.png)
+![Mav asking the user if they'd like to use Google services](http://i.imgur.com/1am3aZh.png)
+![Alternate personality](http://i.imgur.com/yJtsa8S.png)
 
 Compiling
 =========
