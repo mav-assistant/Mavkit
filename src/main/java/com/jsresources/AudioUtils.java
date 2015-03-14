@@ -143,6 +143,8 @@ public class AudioUtils {
 		if (encoding.equals(AudioFormat.Encoding.PCM_SIGNED)) {
 			if (format.getSampleRate() == 44100.0f)
 				return FORMAT_CODE_CD;
+			else if (format.getSampleRate() == 16000.0f)
+				return FORMAT_CODE_SPHINX;
 			else
 				return FORMAT_CODE_FM;
 		}

@@ -52,7 +52,7 @@ public class TextField extends Component {
 		} else if (cursorPos > content.length()) {
 			cursorPos = content.length();
 		}
-		String trimmedText = trimStringToWidth(str.substring(viewPos), width-24);
+		String trimmedText = Fonts.trimStringToWidth(str.substring(viewPos), Fonts.base[1], width-24);
 		int trimmedLength = trimmedText.length();
 		if (cursorPos > viewPos+trimmedLength) {
 			viewPos = cursorPos - trimmedLength;
@@ -71,20 +71,6 @@ public class TextField extends Component {
 		GL11.glScissor((int)x+8, Display.getHeight()-(int)(y+height), (int)width-16, (int)height);
 		Fonts.base[1].drawString(8-mod, 1, trimmedText);
 		GL11.glDisable(GL11.GL_SCISSOR_TEST);
-	}
-
-	private String trimStringToWidth(String str, float width) {
-		if (str.length() == 0) return str;
-		StringBuilder sb = new StringBuilder();
-		float totalWidth = 0;
-		int idx = 0;
-		do {
-			String ch = Character.toString(str.charAt(idx));
-			sb.append(ch);
-			totalWidth += Fonts.base[1].getWidth(ch);
-			idx++;
-		} while (totalWidth < width && idx < str.length());
-		return sb.toString();
 	}
 
 	@Override

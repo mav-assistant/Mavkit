@@ -70,4 +70,48 @@ public class Fonts {
 		}
 	}
 
+	public static String trimStringToWidth(String str, TrueTypeFont font, float width) {
+		if (str.length() == 0) return str;
+		StringBuilder sb = new StringBuilder();
+		float totalWidth = 0;
+		int idx = 0;
+		do {
+			String ch = Character.toString(str.charAt(idx));
+			sb.append(ch);
+			totalWidth += font.getWidth(ch);
+			idx++;
+		} while (totalWidth < width && idx < str.length());
+		return sb.toString();
+	}
+	
+	public static String trimStringToWidthOnSpace(String str, TrueTypeFont font, float width) {
+		if (str.length() == 0) return str;
+		String[] words = str.split(" ");
+		StringBuilder sb = new StringBuilder();
+		float totalWidth = 0;
+		for (int i = 0; i < words.length; i++) {
+			String word = words[i]+" ";
+			if (totalWidth + font.getWidth(word) >= width) {
+				if (i == 0)
+					return trimStringToWidth(str, font, width);
+				break;
+			}
+			sb.append(word);
+			totalWidth += font.getWidth(word);
+		}
+		if (sb.length() > 0) {
+			sb.deleteCharAt(sb.length()-1);
+		}
+		return sb.toString();
+	}
+	
+	public static String wrapStringToFit(String str, TrueTypeFont font, float width) {
+		StringBuilder sb = new StringBuilder();
+		while (sb.length() < str.length()) {
+			sb.append(trimStringToWidthOnSpace(str.substring(sb.length()), font, width));
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
+
 }
