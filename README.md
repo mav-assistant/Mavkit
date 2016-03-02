@@ -30,18 +30,18 @@ recognition engine, etc.
  - [ ] Main interface
   - [ ] Listen for 'Hey, Mav' or custom hotword
   - [ ] Send general queries to...
-   - [ ] DuckDuckGo (once this todo is checked off, Mav should be usable)
-   - [ ] Google
-   - [ ] Yahoo
-   - [ ] Bing
-   - [ ] etc.
+    - [ ] DuckDuckGo (once this todo is checked off, Mav should be usable)
+    - [ ] Google
+    - [ ] Yahoo
+    - [ ] Bing
+    - [ ] etc.
   - [ ] Send special queries to...
-   - [ ] Local (easter eggs, math, date, etc)
-   - [ ] Wolfram Alpha
-   - [ ] Wordnik
-   - [ ] Wikipedia
-   - [ ] etc.
+    - [ ] Local (easter eggs, math, date, etc)
+    - [ ] Wolfram Alpha
+    - [ ] Wordnik
+    - [ ] Wikipedia
+    - [ ] etc.
  - [ ] Configuration interface
-  - [ ] Plugin manager
-  - [ ] Configuration options for everything set during setup
+   - [ ] Plugin manager
+   - [ ] Configuration options for everything set during setup
  - [ ] etc?
