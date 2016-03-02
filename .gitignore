@@ -1,0 +1,17 @@
+*.class
+*.jar
+!gradle-wrapper.jar
+.project
+.classpath
+*.log
+.metadata
+.gradle
+*.tmp
+*.bak
+*.swp
+.externalToolBuilders
+*.launch
+.directory
+/bin/
+.settings
+/build/

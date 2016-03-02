@@ -1,0 +1,59 @@
+plugins {
+	id 'net.minecrell.licenser' version '0.1.2'
+	id 'me.tatarka.retrolambda' version '3.2.5'
+	
+	id 'java'
+	id 'eclipse'
+}
+
+license {
+	header = project.file('HEADER')
+}
+
+group = 'com.unascribed'
+archivesBaseName = 'Mav'
+version = '0.0.1'
+
+repositories {
+	mavenCentral()
+	mavenLocal()
+}
+
+configurations {
+	natives
+}
+
+dependencies {
+	// this can be downloaded off GitHub from https://github.com/surgeplay/glow
+	// run 'gradle build install' to install it to the local Maven repo
+	compile('com.surgeplay:GLOW:lib3.0.0b_v0.1') {
+		exclude group: 'org.lwjgl'
+	}
+	
+	compile 'org.lwjgl:lwjgl:3.0.0b'
+	
+	natives 'org.lwjgl:lwjgl-platform:3.0.0b:natives-windows'
+	natives 'org.lwjgl:lwjgl-platform:3.0.0b:natives-linux'
+	natives 'org.lwjgl:lwjgl-platform:3.0.0b:natives-osx'
+	
+	compile 'org.slf4j:slf4j-simple:1.7.13'
+	compile 'com.google.guava:guava:19.0'
+}
+
+jar {
+	configurations.compile.each { dep ->
+		from(zipTree(dep)) {
+			exclude 'META-INF/**'
+		}
+	}
+	configurations.natives.each { dep ->
+		into("natives/"+dep.name.split("-")[-1].replace(".jar", "")) {
+			from zipTree(dep)
+		}
+	}
+	manifest {
+		attributes (
+			'Main-Class': 'com.unascribed.mav.Bootstrap'
+		)
+	}
+}
