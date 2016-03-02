@@ -1,3 +1,8 @@
+**Note**: This branch is an archive of the original Mav code. It never reached a point where it was actually usable.
+
+The rest of this README is left how it was in the original repository.
+
+
 Mav
 ===
 **Modular Assistant (Voice)**
