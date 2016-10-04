@@ -75,8 +75,6 @@ public class InterfaceRenderer {
 			
 			timeElapsed += delta;
 			
-			System.out.println(timeElapsed);
-			
 			canvas.beginFrame();
 			if (currentScreen != null) {
 				currentScreen.render(canvas, delta);

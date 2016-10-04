@@ -60,6 +60,7 @@ public class Display {
 	@UIEffect
 	public void start(Mav mav) {
 		this.mav = mav;
+		glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.err));
 		if (!glfwInit()) {
 			throw new Panic("panic.glfwInitFailed");
 		}

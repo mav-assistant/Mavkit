@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
@@ -71,6 +73,7 @@ public final class Mav {
 				try {
 					if (e instanceof Panic) {
 						log.error("Panic!", e);
+						setLaF();
 						JOptionPane.showMessageDialog(null, I18n.get("dialog.panic.title")+e.getLocalizedMessage(), I18n.get("window.title", version), JOptionPane.ERROR_MESSAGE, null);
 						System.exit(2);
 					} else {
@@ -78,6 +81,7 @@ public final class Mav {
 						if ("Main thread".equals(t.getName())
 								|| "UI thread".equals(t.getName())
 								|| "Audio thread".equals(t.getName())) {
+							setLaF();
 							JOptionPane.showMessageDialog(null, I18n.get("dialog.error.title")+Throwables.getStackTraceAsString(e), I18n.get("window.title", version), JOptionPane.ERROR_MESSAGE, null);
 							System.exit(1);
 						}
@@ -116,6 +120,20 @@ public final class Mav {
 			init.await();
 		} catch (InterruptedException e1) {
 			throw Throwables.propagate(e1);
+		}
+	}
+	
+	private void setLaF() {
+		try {
+			UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+			log.info("Using GTK+ LaF for error dialogs.");
+		} catch (Exception e) {
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				log.info("Using system LaF for error dialogs.");
+			} catch (Exception e2) {
+				log.info("Using default LaF for error dialogs.");
+			}
 		}
 	}
 	
