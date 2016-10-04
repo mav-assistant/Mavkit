@@ -20,18 +20,21 @@ package com.unascribed.mav;
 import static org.lwjgl.glfw.GLFW.*;
 
 import java.nio.IntBuffer;
+import java.util.Map;
 
 import org.checkerframework.checker.guieffect.qual.UIEffect;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.RequiresNonNull;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengles.GLES;
 import org.lwjgl.opengles.GLES20;
+import org.lwjgl.system.APIUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,9 +63,13 @@ public class Display {
 	@UIEffect
 	public void start(Mav mav) {
 		this.mav = mav;
-		glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.err));
+		String[] lastError = new String[] { I18n.get("panic.glfwInitFailed.default") };
+		Map<Integer, String> ERROR_CODES = APIUtil.apiClassTokens((field, value) -> 0x10000 < value && value < 0x20000, null, GLFW.class);
+		glfwSetErrorCallback(GLFWErrorCallback.create((e, d) -> {
+			lastError[0] = ERROR_CODES.get(e)+"\n"+GLFWErrorCallback.getDescription(d);
+		}));
 		if (!glfwInit()) {
-			throw new Panic("panic.glfwInitFailed");
+			throw new Panic("panic.glfwInitFailed", lastError[0]);
 		}
 		
 		boolean[] hasError = new boolean[] { false };
