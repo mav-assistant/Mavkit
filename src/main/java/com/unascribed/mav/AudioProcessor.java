@@ -20,6 +20,9 @@ package com.unascribed.mav;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFormat.Encoding;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.RequiresNonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,17 +31,19 @@ import javax.sound.sampled.SourceDataLine;
 
 public class AudioProcessor {
 	private static final Logger log = LoggerFactory.getLogger("AudioProcessor");
-	
-	private AudioFormat audioFormat;
-	private SourceDataLine dataLine;
-	
+
+	@MonotonicNonNull
 	private Mav mav;
 	
-	public AudioProcessor(Mav mav) {
-		this.mav = mav;
-	}
+	@MonotonicNonNull
+	private AudioFormat audioFormat;
+	@MonotonicNonNull
+	private SourceDataLine dataLine;
 	
-	private void initialize() {
+	
+	@EnsuresNonNull({"this.mav", "this.audioFormat", "this.dataLine"})
+	public void start(Mav mav) {
+		this.mav = mav;
 		try {
 			AudioFormat af = new AudioFormat(Encoding.PCM_SIGNED, 44100, 16, 1, 2, 44100, true);
 			SourceDataLine sdl = AudioSystem.getSourceDataLine(af);
@@ -50,7 +55,8 @@ public class AudioProcessor {
 		}
 	}
 	
+	@RequiresNonNull({"this.mav", "this.audioFormat", "this.dataLine"})
 	public void run() {
-		initialize();
+		
 	}
 }

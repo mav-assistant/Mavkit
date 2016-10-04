@@ -21,6 +21,10 @@ import static org.lwjgl.glfw.GLFW.*;
 
 import java.nio.IntBuffer;
 
+import org.checkerframework.checker.guieffect.qual.UIEffect;
+import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.RequiresNonNull;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
@@ -35,50 +39,27 @@ import com.unascribed.mav.internal.canvas.gl.NanoVGGL2Canvas;
 import com.unascribed.mav.internal.canvas.gl.NanoVGGL3Canvas;
 import com.unascribed.mav.internal.canvas.gles.NanoVGGLES2Canvas;
 import com.unascribed.mav.internal.canvas.gles.NanoVGGLES3Canvas;
+import com.unascribed.mav.render.Canvas;
 
 public class Display {
 	private static final Logger log = LoggerFactory.getLogger("Display");
 	private static final int DEFAULT_WIDTH = 240;
 	private static final int DEFAULT_HEIGHT = 480;
 	
-	private final Mav mav;
+	@MonotonicNonNull
+	private Mav mav;
 	
 	private IntBuffer width = BufferUtils.createIntBuffer(1);
 	private IntBuffer height = BufferUtils.createIntBuffer(1);
 	private float pixelRatio;
 	
 	private long window;
-	private Canvas canvas;
+	private Canvas canvas = new NoOpCanvas();
 	
-	public Display(Mav mav) {
+	@EnsuresNonNull({"this.mav", "this.canvas"})
+	@UIEffect
+	public void start(Mav mav) {
 		this.mav = mav;
-	}
-	
-	public int getWidth() {
-		return width.get(0);
-	}
-	public int getHeight() {
-		return height.get(0);
-	}
-	public float getPixelRatio() {
-		return pixelRatio;
-	}
-	
-	public Canvas getCanvas() {
-		return canvas;
-	}
-	
-	public boolean shouldClose() {
-		return glfwWindowShouldClose(window);
-	}
-	
-	public void swap() {
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
-	
-	
-	void initialize() {
 		if (!glfwInit()) {
 			throw new Panic("panic.glfwInitFailed");
 		}
@@ -125,6 +106,7 @@ public class Display {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 		createWindow();
+		
 		String version;
 		if (hasError[0]) {
 			hasError[0] = false;
@@ -153,7 +135,34 @@ public class Display {
 		
 		throw new Panic("panic.noSuitableContext", version);
 	}
+	
+	public int getWidth() {
+		return width.get(0);
+	}
+	public int getHeight() {
+		return height.get(0);
+	}
+	public float getPixelRatio() {
+		return pixelRatio;
+	}
+	
+	public Canvas getCanvas() {
+		return canvas;
+	}
+	
+	@UIEffect
+	public boolean shouldClose() {
+		return glfwWindowShouldClose(window);
+	}
+	
+	@UIEffect
+	public void swap() {
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
 
+	@RequiresNonNull("this.mav")
+	@UIEffect
 	private boolean tryInitialization(boolean[] arr, boolean es) {
 		createWindow();
 		if (arr[0]) {
@@ -165,11 +174,16 @@ public class Display {
 		}
 	}
 	
+	@RequiresNonNull("this.mav")
+	@UIEffect
 	private void createWindow() {
-		window = glfwCreateWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, "Mav "+mav.getVersion(), 0, 0);
+		window = glfwCreateWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, I18n.get("window.title", mav.getVersion()), 0, 0);
 		glfwMakeContextCurrent(window);
 	}
 	
+	@RequiresNonNull("this.mav")
+	@EnsuresNonNull("this.canvas")
+	@UIEffect
 	private void finishInitialization(boolean es) {
 		GLFWErrorCallback ecb = GLFWErrorCallback.createPrint(System.err);
 		mav.keepAlive(ecb);
@@ -193,7 +207,7 @@ public class Display {
 				log.info("Using OpenGL ES 2.0 rendering");
 				canvas = new NanoVGGLES2Canvas(mav);
 			} else {
-				throw new Panic("Can't create a suitable renderer, need at least OpenGL ES 2.0, got "+version);
+				throw new Panic("panic.noSuitableContext", I18n.get("panic.noSuitableContext.onlyGlEs", version));
 			}
 		} else {
 			if (major > 3 || (major >= 3 && minor >= 2)) {
@@ -203,7 +217,7 @@ public class Display {
 				log.info("Using OpenGL 2.0 rendering");
 				canvas = new NanoVGGL2Canvas(mav);
 			} else {
-				throw new Panic("Can't create a suitable renderer, need at least OpenGL 2.0, got "+version);
+				throw new Panic("panic.noSuitableContext", I18n.get("panic.noSuitableContext.onlyGl", version));
 			}
 		}
 		
@@ -217,6 +231,7 @@ public class Display {
 		}
 	}
 
+	@UIEffect
 	private String getGLVersion(boolean es) {
 		String fullVersion;
 		String renderer;
@@ -238,6 +253,7 @@ public class Display {
 		return version;
 	}
 
+	@UIEffect
 	private void updateWindowSize(long window, int baseWidth, int baseHeight) {
 		glfwGetFramebufferSize(window, width, height);
 		pixelRatio = getWidth()/(float)baseWidth;

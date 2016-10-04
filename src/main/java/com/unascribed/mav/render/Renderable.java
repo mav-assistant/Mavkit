@@ -15,18 +15,12 @@
  * along with Mav. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.unascribed.mav;
+package com.unascribed.mav.render;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.checkerframework.checker.guieffect.qual.UIEffect;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
-public class Bootstrap {
-
-	private static Logger log = LoggerFactory.getLogger("Bootstrap");
-	
-	
-	public static void main(String[] args) {
-		new Mav();
-	}
-	
+public interface Renderable {
+	@UIEffect
+	void render(@NonNull Canvas c, double delta);
 }

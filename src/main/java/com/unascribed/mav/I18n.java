@@ -20,11 +20,17 @@ package com.unascribed.mav;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+
+import org.checkerframework.checker.i18n.qual.LocalizableKey;
+import org.checkerframework.checker.i18n.qual.Localized;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.propkey.qual.PropertyKey;
 import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
 
 import com.google.common.base.Throwables;
 
+@SuppressWarnings("return.type.incompatible")
 public final class I18n {
 	private static final String BUNDLE_NAME = "com.unascribed.mav.lang";
 
@@ -33,48 +39,55 @@ public final class I18n {
 
 	private I18n() {}
 
-	public static String get(String key) {
+	
+	@NonNull
+	@Localized
+	public static String get(@LocalizableKey @PropertyKey String key) {
 		try {
 			return LOCAL.getString(key);
 		} catch (MissingResourceException e) {
 			return '!' + key + '!';
 		}
 	}
-	
-	public static String get(String key, Object arg) {
+	@NonNull
+	@Localized
+	public static String get(@LocalizableKey @PropertyKey String key, Object arg) {
 		FormattingTuple tuple = MessageFormatter.format(get(key), arg);
 		return tuple.getMessage()+(tuple.getThrowable() != null ? "\n"+Throwables.getStackTraceAsString(tuple.getThrowable()) : "");
 	}
-	
-	public static String get(String key, Object arg1, Object arg2) {
+	@NonNull
+	@Localized
+	public static String get(@LocalizableKey @PropertyKey String key, Object arg1, Object arg2) {
 		FormattingTuple tuple = MessageFormatter.format(get(key), arg1, arg2);
 		return tuple.getMessage()+(tuple.getThrowable() != null ? "\n"+Throwables.getStackTraceAsString(tuple.getThrowable()) : "");
 	}
-	
-	public static String get(String key, Object... args) {
+	@NonNull
+	@Localized
+	public static String get(@LocalizableKey @PropertyKey String key, Object... args) {
 		FormattingTuple tuple = MessageFormatter.arrayFormat(get(key), args);
 		return tuple.getMessage()+(tuple.getThrowable() != null ? "\n"+Throwables.getStackTraceAsString(tuple.getThrowable()) : "");
 	}
 	
-	public static String getDefault(String key) {
+	@NonNull
+	public static String getDefault(@LocalizableKey @PropertyKey String key) {
 		try {
 			return DEFAULT.getString(key);
 		} catch (MissingResourceException e) {
 			return '!' + key + '!';
 		}
 	}
-	
-	public static String getDefault(String key, Object arg) {
+	@NonNull
+	public static String getDefault(@LocalizableKey @PropertyKey String key, Object arg) {
 		FormattingTuple tuple = MessageFormatter.format(getDefault(key), arg);
 		return tuple.getMessage()+(tuple.getThrowable() != null ? "\n"+Throwables.getStackTraceAsString(tuple.getThrowable()) : "");
 	}
-	
-	public static String getDefault(String key, Object arg1, Object arg2) {
+	@NonNull
+	public static String getDefault(@LocalizableKey @PropertyKey String key, Object arg1, Object arg2) {
 		FormattingTuple tuple = MessageFormatter.format(getDefault(key), arg1, arg2);
 		return tuple.getMessage()+(tuple.getThrowable() != null ? "\n"+Throwables.getStackTraceAsString(tuple.getThrowable()) : "");
 	}
-	
-	public static String getDefault(String key, Object... args) {
+	@NonNull
+	public static String getDefault(@LocalizableKey @PropertyKey String key, Object... args) {
 		FormattingTuple tuple = MessageFormatter.arrayFormat(getDefault(key), args);
 		return tuple.getMessage()+(tuple.getThrowable() != null ? "\n"+Throwables.getStackTraceAsString(tuple.getThrowable()) : "");
 	}

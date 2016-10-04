@@ -15,18 +15,8 @@
  * along with Mav. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.unascribed.mav;
+package com.unascribed.mav.widget;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public abstract class Widget {
 
-public class Bootstrap {
-
-	private static Logger log = LoggerFactory.getLogger("Bootstrap");
-	
-	
-	public static void main(String[] args) {
-		new Mav();
-	}
-	
 }

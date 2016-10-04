@@ -17,27 +17,34 @@
 
 package com.unascribed.mav;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import javax.swing.JOptionPane;
-import javax.swing.UIManager;
-
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import com.unascribed.mav.render.InterfaceRenderer;
 
 public final class Mav {
 	private static Logger log = LoggerFactory.getLogger("Mav");
 	
-	private String version;
-	private String googleApiKey;
+	@NonNull
+	private final String version;
+	@Nullable
+	private final String googleApiKey;
 	
-	private Display display;
+	private final Display display;
+	private final InterfaceRenderer interfaceRenderer;
+	private final AudioProcessor audioProcessor;
 	
-	private List<Object> keepAlive = Lists.newArrayList();
+	private final List<Object> keepAlive = Lists.newArrayList();
 	
 	private static final String[] initMessages = {
 		"Mav {} at your service.",
@@ -45,50 +52,71 @@ public final class Mav {
 		"Hello, World! This is Mav {}",
 	};
 	
-	public void initialize() {
+	public Mav() {
 		Thread.currentThread().setName("Main thread");
 		
 		version = System.getProperty("com.unascribed.mav.version", I18n.get("application.versionPlaceholder"));
 		log.info(initMessages[(int)(Math.random()*initMessages.length)], version);
-		googleApiKey = System.getProperty("com.unascribed.mav.googleApiKey");
-		if (Strings.isNullOrEmpty(googleApiKey) || googleApiKey.equals("MY-API-KEY")) {
+		String googleApiKey = Strings.emptyToNull(System.getProperty("com.unascribed.mav.googleApiKey"));
+		if ("MY-API-KEY".equals(googleApiKey)) {
 			googleApiKey = null;
 		}
+		this.googleApiKey = googleApiKey;
 		
-		try {
-			UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-			log.info("Using GTK+ LaF for error dialogs.");
-		} catch (Exception e) {
-			try {
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-				log.info("Using system LaF for error dialogs.");
-			} catch (Exception e2) {
-				log.info("Using default LaF for error dialogs.");
-			}
-		}
-		
-		Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
-			if (e instanceof Panic) {
-				log.error("Panic!", e);
-				JOptionPane.showMessageDialog(null, I18n.get("dialog.panic.title")+e.getLocalizedMessage(), I18n.get("window.title", version), JOptionPane.ERROR_MESSAGE, null);
-				System.exit(2);
-			} else {
-				log.error("{} died", t.getName(), e);
-				if ("Main thread".equals(t.getName())) {
-					JOptionPane.showMessageDialog(null, I18n.get("dialog.error.title")+Throwables.getStackTraceAsString(e), I18n.get("window.title", version), JOptionPane.ERROR_MESSAGE, null);
-					System.exit(1);
+		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+			@Override
+			// Checker Framework doesn't understand a few things about JOptionPane
+			@SuppressWarnings({"argument.type.incompatible", "call.invalid.ui"})
+			public void uncaughtException(Thread t, Throwable e) {
+				try {
+					if (e instanceof Panic) {
+						log.error("Panic!", e);
+						JOptionPane.showMessageDialog(null, I18n.get("dialog.panic.title")+e.getLocalizedMessage(), I18n.get("window.title", version), JOptionPane.ERROR_MESSAGE, null);
+						System.exit(2);
+					} else {
+						log.error("{} died", t.getName(), e);
+						if ("Main thread".equals(t.getName())
+								|| "UI thread".equals(t.getName())
+								|| "Audio thread".equals(t.getName())) {
+							JOptionPane.showMessageDialog(null, I18n.get("dialog.error.title")+Throwables.getStackTraceAsString(e), I18n.get("window.title", version), JOptionPane.ERROR_MESSAGE, null);
+							System.exit(1);
+						}
+					}
+				} catch (Exception ex) {
+					Throwables.propagate(ex);
 				}
 			}
 		});
+
+		display = new Display();
+		interfaceRenderer = new InterfaceRenderer();
+		audioProcessor = new AudioProcessor();
+	}
+	
+	
+	// this method is the crossover from non-UI threads to UI threads, so ignore
+	@SuppressWarnings("call.invalid.ui")
+	public void start() {
+		CountDownLatch init = new CountDownLatch(2);
 		
-		display = new Display(this);
-		display.initialize();
+		new Thread(() -> {
+			display.start(this);
+			interfaceRenderer.start(this);
+			init.countDown();
+			interfaceRenderer.run();
+		}, "UI thread").start();
 		
-		InterfaceRenderer ir = new InterfaceRenderer(this);
-		AudioProcessor ap = new AudioProcessor(this);
-		new Thread(ap::run, "Audio thread").start();
+		new Thread(() -> {
+			audioProcessor.start(this);
+			init.countDown();
+			audioProcessor.run();
+		}, "Audio thread").start();
 		
-		ir.run();
+		try {
+			init.await();
+		} catch (InterruptedException e1) {
+			throw Throwables.propagate(e1);
+		}
 	}
 	
 	public Display getDisplay() {
@@ -99,6 +127,7 @@ public final class Mav {
 		return version;
 	}
 
+	@Nullable
 	public String getGoogleApiKey() {
 		return googleApiKey;
 	}

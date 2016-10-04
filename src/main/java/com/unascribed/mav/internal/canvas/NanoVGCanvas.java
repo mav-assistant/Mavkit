@@ -34,6 +34,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.nanovg.NVGColor;
 import org.lwjgl.nanovg.NVGPaint;
@@ -42,8 +44,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Maps;
-import com.unascribed.mav.Canvas;
 import com.unascribed.mav.Mav;
+import com.unascribed.mav.render.Canvas;
 
 /**
  * Implementation of Canvas on top of NanoVG.
@@ -60,7 +62,7 @@ public abstract class NanoVGCanvas implements Canvas {
 		
 		private final FloatBuffer measure = BufferUtils.createFloatBuffer(4);
 		
-		public NanoVGFont(String name, int handle) {
+		public NanoVGFont(@NonNull String name, int handle) {
 			this.name = name;
 			this.handle = handle;
 		}
@@ -71,6 +73,7 @@ public abstract class NanoVGCanvas implements Canvas {
 		}
 
 		@Override
+		@NonNull
 		public String getName() {
 			return name;
 		}
@@ -91,17 +94,17 @@ public abstract class NanoVGCanvas implements Canvas {
 		}
 
 		@Override
-		public float measureWidth(String string) {
+		public float measureWidth(@NonNull String string) {
 			nvgTextBounds(ctx, 0, 0, string, 0, measure);
 			return Math.abs(measure.get(2)-measure.get(0));
 		}
 
 		@Override
-		public float measureHeight(String string, float breakWidth) {
+		public float measureHeight(@NonNull String string, float breakWidth) {
 			nvgTextBoxBounds(ctx, 0, 0, breakWidth, string, 0, measure);
 			return Math.abs(measure.get(3)-measure.get(1));
 		}
-		boolean isOwner(NanoVGCanvas canvas) {
+		boolean isOwner(@Nullable NanoVGCanvas canvas) {
 			return NanoVGCanvas.this == canvas;
 		}
 
@@ -132,14 +135,14 @@ public abstract class NanoVGCanvas implements Canvas {
 			return h.get(0);
 		}
 		
-		boolean isOwner(NanoVGCanvas canvas) {
+		boolean isOwner(@Nullable NanoVGCanvas canvas) {
 			return NanoVGCanvas.this == canvas;
 		}
 
 	}
 	public class NanoVGColor implements Color {
 		private final NVGColor wrapped;
-		public NanoVGColor(NVGColor color) {
+		public NanoVGColor(@NonNull NVGColor color) {
 			this.wrapped = color;
 		}
 		@Override
@@ -177,7 +180,7 @@ public abstract class NanoVGCanvas implements Canvas {
 		}
 		
 		@Override
-		public void set(Color c) {
+		public void set(@NonNull Color c) {
 			if (c instanceof NanoVGColor) {
 				wrapped.set(((NanoVGColor)c).wrapped);
 			} else {
@@ -192,7 +195,7 @@ public abstract class NanoVGCanvas implements Canvas {
 			wrapped.free();			
 		}
 		
-		boolean isOwner(NanoVGCanvas canvas) {
+		boolean isOwner(@Nullable NanoVGCanvas canvas) {
 			return NanoVGCanvas.this == canvas;
 		}
 	}
@@ -227,33 +230,33 @@ public abstract class NanoVGCanvas implements Canvas {
 	private final Mav mav;
 	private final long ctx;
 	private final Map<Integer, NanoVGFont> fonts = Maps.newHashMap();
-	public NanoVGCanvas(Mav mav, long ctx) {
+	public NanoVGCanvas(@NonNull Mav mav, long ctx) {
 		this.mav = mav;
 		this.ctx = ctx;
 	}
 	
-	private NVGColor unwrap(Color color) {
+	private NVGColor unwrap(@Nullable Color color) {
 		if (color == null) throw new IllegalArgumentException("Cannot use a null color");
 		if (!(color instanceof NanoVGColor)) {
 			return nvgRGBAf(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha(), NVGColor.create());
 		}
 		return ((NanoVGColor)color).wrapped;
 	}
-	private NVGPaint unwrap(Paint paint) {
+	private NVGPaint unwrap(@Nullable Paint paint) {
 		if (paint == null) throw new IllegalArgumentException("Cannot use a null paint");
 		if (!(paint instanceof NanoVGPaint) || !((NanoVGPaint)paint).isOwner(this)) {
 			throw new IllegalArgumentException("Cannot use a Paint from another Canvas");
 		}
 		return ((NanoVGPaint)paint).wrapped;
 	}
-	private int unwrap(Image image) {
+	private int unwrap(@Nullable Image image) {
 		if (image == null) throw new IllegalArgumentException("Cannot use a null image");
 		if (!(image instanceof NanoVGImage) || !((NanoVGImage)image).isOwner(this)) {
 			throw new IllegalArgumentException("Cannot use an Image from another Canvas");
 		}
 		return ((NanoVGImage)image).handle;
 	}
-	private int unwrap(Font font) {
+	private int unwrap(@Nullable Font font) {
 		if (font == null) throw new IllegalArgumentException("Cannot use a null font");
 		if (!(font instanceof NanoVGFont) || !((NanoVGFont)font).isOwner(this)) {
 			throw new IllegalArgumentException("Cannot use a Font from another Canvas");
@@ -287,7 +290,7 @@ public abstract class NanoVGCanvas implements Canvas {
 		return i;
 	}
 	
-	private int convert(HorizontalAlign horz, VerticalAlign vert) {
+	private int convert(@NonNull HorizontalAlign horz, @NonNull VerticalAlign vert) {
 		int i = 0;
 		switch (horz) {
 			case CENTER:
@@ -321,7 +324,8 @@ public abstract class NanoVGCanvas implements Canvas {
 		return i;
 	}
 	
-	private ByteBuffer load(String resource) {
+	@NonNull
+	private ByteBuffer load(@NonNull String resource) {
 		try {
 			ByteBuffer buffer;
 	
@@ -332,30 +336,36 @@ public abstract class NanoVGCanvas implements Canvas {
 					while (fc.read(buffer) != -1);
 				}
 			} else {
-				try (
-					InputStream source = ClassLoader.getSystemResourceAsStream(resource);
-					ReadableByteChannel rbc = Channels.newChannel(source)
-				) {
-					buffer = BufferUtils.createByteBuffer(4096);
-	
-					while (true) {
-						int bytes = rbc.read(buffer);
-						if (bytes == -1)
-							break;
-						if (buffer.remaining() == 0)
-							buffer = resizeBuffer(buffer, buffer.capacity() * 2);
+				InputStream source = ClassLoader.getSystemResourceAsStream(resource);
+				if (source != null) {
+					try (
+						InputStream src = source;
+						ReadableByteChannel rbc = Channels.newChannel(src)
+					) {
+						buffer = BufferUtils.createByteBuffer(4096);
+		
+						while (true) {
+							int bytes = rbc.read(buffer);
+							if (bytes == -1)
+								break;
+							if (buffer.remaining() == 0)
+								buffer = resizeBuffer(buffer, buffer.capacity() * 2);
+						}
 					}
+				} else {
+					throw new RuntimeException("Could not find resource with path "+resource);
 				}
 			}
 	
 			buffer.flip();
 			return buffer;
 		} catch (IOException e) {
-			throw new RuntimeException("Failed to load resources "+resource, e);
+			throw new RuntimeException("Failed to load resource "+resource, e);
 		}
 	}
 	
-	private ByteBuffer resizeBuffer(ByteBuffer buffer, int newCapacity) {
+	@NonNull
+	private ByteBuffer resizeBuffer(@NonNull ByteBuffer buffer, int newCapacity) {
 		ByteBuffer newBuffer = BufferUtils.createByteBuffer(newCapacity);
 		buffer.flip();
 		newBuffer.put(buffer);
@@ -379,8 +389,9 @@ public abstract class NanoVGCanvas implements Canvas {
 	}
 
 	@Override
-	public void save() {
+	public Restorer save() {
 		nvgSave(ctx);
+		return this::restore;
 	}
 
 	@Override
@@ -394,22 +405,22 @@ public abstract class NanoVGCanvas implements Canvas {
 	}
 
 	@Override
-	public void strokeStyle(Color color) {
+	public void strokeStyle(@NonNull Color color) {
 		nvgStrokeColor(ctx, unwrap(color));
 	}
 
 	@Override
-	public void strokeStyle(Paint paint) {
+	public void strokeStyle(@NonNull Paint paint) {
 		nvgStrokePaint(ctx, unwrap(paint));
 	}
 
 	@Override
-	public void fillStyle(Color color) {
+	public void fillStyle(@NonNull Color color) {
 		nvgFillColor(ctx, unwrap(color));
 	}
 
 	@Override
-	public void fillStyle(Paint paint) {
+	public void fillStyle(@NonNull Paint paint) {
 		nvgFillPaint(ctx, unwrap(paint));
 	}
 
@@ -424,7 +435,7 @@ public abstract class NanoVGCanvas implements Canvas {
 	}
 
 	@Override
-	public void strokeCap(StrokeCap cap) {
+	public void strokeCap(@NonNull StrokeCap cap) {
 		int nvg;
 		switch (cap) {
 			case BUTT:
@@ -443,7 +454,7 @@ public abstract class NanoVGCanvas implements Canvas {
 	}
 
 	@Override
-	public void strokeJoin(StrokeJoin join) {
+	public void strokeJoin(@NonNull StrokeJoin join) {
 		int nvg;
 		switch (join) {
 			case BEVEL:
@@ -493,7 +504,8 @@ public abstract class NanoVGCanvas implements Canvas {
 	}
 
 	@Override
-	public Image createImage(BufferedImage img, ImageMode... modes) {
+	@Nullable
+	public Image createImage(@NonNull BufferedImage img, ImageMode... modes) {
 		int nvg = convert(modes);
 		int w = img.getWidth();
 		int h = img.getHeight();
@@ -508,7 +520,8 @@ public abstract class NanoVGCanvas implements Canvas {
 	}
 
 	@Override
-	public Image createImage(File file, ImageMode... modes) {
+	@Nullable
+	public Image createImage(@NonNull File file, ImageMode... modes) {
 		int nvg = convert(modes);
 		ByteBuffer data = load(file.getAbsolutePath());
 		int handle = nvgCreateImageMem(ctx, nvg, data);
@@ -517,7 +530,8 @@ public abstract class NanoVGCanvas implements Canvas {
 	}
 
 	@Override
-	public Image createImage(String path, ImageMode... modes) {
+	@Nullable
+	public Image createImage(@NonNull String path, ImageMode... modes) {
 		int nvg = convert(modes);
 		ByteBuffer data = load(path);
 		int handle = nvgCreateImageMem(ctx, nvg, data);
@@ -526,6 +540,7 @@ public abstract class NanoVGCanvas implements Canvas {
 	}
 
 	@Override
+	@Nullable
 	public Paint createLinearGradient(float startX, float startY, float endX,
 			float endY, Color start, Color end) {
 		NVGPaint paint = nvgLinearGradient(ctx, startX, startY, endX, endY, unwrap(start), unwrap(end), NVGPaint.create());
@@ -533,6 +548,7 @@ public abstract class NanoVGCanvas implements Canvas {
 	}
 
 	@Override
+	@Nullable
 	public Paint createBoxGradient(float x, float y, float width, float height,
 			float radius, float feather, Color inner, Color outer) {
 		NVGPaint paint = nvgBoxGradient(ctx, x, y, width, height, radius, feather, unwrap(inner), unwrap(outer), NVGPaint.create());
@@ -540,15 +556,17 @@ public abstract class NanoVGCanvas implements Canvas {
 	}
 
 	@Override
+	@Nullable
 	public Paint createRadialGradient(float centerX, float centerY,
-			float innerRadius, float outerRadius, Color inner, Color outer) {
+			float innerRadius, float outerRadius, @NonNull Color inner, @NonNull Color outer) {
 		NVGPaint paint = nvgRadialGradient(ctx, centerX, centerY, innerRadius, outerRadius, unwrap(inner), unwrap(outer), NVGPaint.create());
 		return new NanoVGPaint(paint);
 	}
 
 	@Override
+	@Nullable
 	public Paint createPattern(float x, float y, float width, float height,
-			float angle, Image image, float alpha) {
+			float angle, @NonNull Image image, float alpha) {
 		NVGPaint paint = NVGPaint.create();
 		paint = nvgImagePattern(ctx, x, y, width, height, angle, unwrap(image), alpha, paint);
 		return new NanoVGPaint(paint);
@@ -607,7 +625,7 @@ public abstract class NanoVGCanvas implements Canvas {
 	}
 
 	@Override
-	public void pathWinding(Winding winding) {
+	public void pathWinding(@NonNull Winding winding) {
 		int nvg;
 		switch (winding) {
 			case CCW:
@@ -624,7 +642,7 @@ public abstract class NanoVGCanvas implements Canvas {
 
 	@Override
 	public void arc(float centerX, float centerY, float radius,
-			float angleStart, float angleEnd, Winding winding) {
+			float angleStart, float angleEnd, @NonNull Winding winding) {
 		int nvg;
 		switch (winding) {
 			case CCW:
@@ -672,7 +690,8 @@ public abstract class NanoVGCanvas implements Canvas {
 	}
 
 	@Override
-	public Font createFont(String name, String path) {
+	@Nullable
+	public Font createFont(@NonNull String name, @NonNull String path) {
 		ByteBuffer data = load(path);
 		int handle = nvgCreateFontMem(ctx, name, data, 0);
 		if (handle == -1) return null;
@@ -682,7 +701,8 @@ public abstract class NanoVGCanvas implements Canvas {
 	}
 
 	@Override
-	public Font loadFont(String name, File file) {
+	@Nullable
+	public Font loadFont(@NonNull String name, @NonNull File file) {
 		ByteBuffer data = load(file.getAbsolutePath());
 		int handle = nvgCreateFontMem(ctx, name, data, 0);
 		if (handle == -1) return null;
@@ -692,7 +712,8 @@ public abstract class NanoVGCanvas implements Canvas {
 	}
 
 	@Override
-	public Font findFont(String name) {
+	@Nullable
+	public Font findFont(@NonNull String name) {
 		int font = nvgFindFont(ctx, name);
 		if (font == -1) {
 			return null;
@@ -722,18 +743,18 @@ public abstract class NanoVGCanvas implements Canvas {
 	}
 
 	@Override
-	public void textAlign(HorizontalAlign horizontal, VerticalAlign vertical) {
+	public void textAlign(@NonNull HorizontalAlign horizontal, @NonNull VerticalAlign vertical) {
 		int nvg = convert(horizontal, vertical);
 		nvgTextAlign(ctx, nvg);
 	}
 
 	@Override
-	public void fontFace(Font font) {
+	public void fontFace(@NonNull Font font) {
 		nvgFontFaceId(ctx, unwrap(font));
 	}
 
 	@Override
-	public void drawText(float x, float y, String string) {
+	public void drawText(float x, float y, @NonNull String string) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			ByteBuffer utf8 = stack.UTF8(string);
 			nvgText(ctx, x, y, utf8, 0);
@@ -741,7 +762,7 @@ public abstract class NanoVGCanvas implements Canvas {
 	}
 
 	@Override
-	public void drawTextBox(float x, float y, float breakWidth, String string) {
+	public void drawTextBox(float x, float y, float breakWidth, @NonNull String string) {
 		nvgTextBox(ctx, x, y, breakWidth, string, 0);
 	}
 
@@ -780,9 +801,20 @@ public abstract class NanoVGCanvas implements Canvas {
 	}
 
 	@Override
-	public Color lerp(Color c0, Color c1, float u) {
+	@NonNull
+	public Color lerp(@NonNull Color c0, @NonNull Color c1, float u) {
 		NVGColor color = nvgLerpRGBA(unwrap(c0), unwrap(c1), u, NVGColor.create());
 		return new NanoVGColor(color);
+	}
+	
+	@Override
+	public float radToDeg(float rad) {
+		return nvgRadToDeg(rad);
+	}
+	
+	@Override
+	public float degToRad(float deg) {
+		return nvgDegToRad(deg);
 	}
 
 }

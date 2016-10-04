@@ -15,18 +15,27 @@
  * along with Mav. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.unascribed.mav;
+package com.unascribed.mav.widget;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
 
-public class Bootstrap {
+import org.checkerframework.checker.guieffect.qual.UIEffect;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import com.google.common.collect.Lists;
+import com.unascribed.mav.render.Canvas;
+import com.unascribed.mav.render.Renderable;
 
-	private static Logger log = LoggerFactory.getLogger("Bootstrap");
+public abstract class Screen implements Renderable {
+	private List<Widget> widgets = Lists.newArrayList();
 	
-	
-	public static void main(String[] args) {
-		new Mav();
+	@Override
+	@UIEffect
+	public void render(@NonNull Canvas c, double delta) {
+		c.isolate(() -> {
+			for (Widget w : widgets) {
+				
+			}
+		});
 	}
-	
+
 }

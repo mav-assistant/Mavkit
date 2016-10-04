@@ -15,17 +15,29 @@
  * along with Mav. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.unascribed.mav;
+package com.unascribed.mav.render;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.guieffect.qual.SafeEffect;
+import org.checkerframework.checker.guieffect.qual.UIEffect;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.imageio.ImageIO;
+
+import com.unascribed.mav.Disposable;
 
 /**
  * Represents a rendering API.
  */
 public interface Canvas {
+
+	public interface Restorer extends AutoCloseable {
+		@Override
+		void close();
+	}
+
 
 	public enum ImageMode {
 		/**
@@ -196,6 +208,7 @@ public interface Canvas {
 		void setBlue(float value);
 		void setAlpha(float value);
 		
+		@UIEffect
 		void set(Color c);
 	}
 	public interface Paint extends Disposable {
@@ -203,11 +216,13 @@ public interface Canvas {
 		 * @return a view of this Paint's inner color, i.e. modifications to the
 		 * 		Color are reflected in this Paint.
 		 */
+		@NonNull
 		Color getInnerColor();
 		/**
 		 * @return a view of this Paint's outer color, i.e. modifications to the
 		 * 		Color are reflected in this Paint.
 		 */
+		@NonNull
 		Color getOuterColor();
 	}
 	public interface Image extends Disposable {
@@ -215,25 +230,31 @@ public interface Canvas {
 		int getHeight();
 	}
 	public interface Font extends Disposable {
+		@NonNull
 		String getName();
 		float getLineHeight();
 		float getAscenderHeight();
 		float getDescenderHeight();
-		float measureWidth(String string);
-		float measureHeight(String string, float breakWidth);
+		@UIEffect
+		float measureWidth(@NonNull String string);
+		@UIEffect
+		float measureHeight(@NonNull String string, float breakWidth);
 	}
 	
 	/**
 	 * Internal. Begin drawing a new frame.
 	 */
+	@UIEffect
 	void beginFrame();
 	/**
 	 * Internal. End drawing the current frame, flushing render state.
 	 */
+	@UIEffect
 	void endFrame();
 	/**
 	 * Internal. Cancel drawing the current frame.
 	 */
+	@UIEffect
 	void cancelFrame();
 	
 	
@@ -241,18 +262,36 @@ public interface Canvas {
 	 * Pushes and saves the current render state into a state stack.
 	 * <p>
 	 * A matching {@link #restore} must be used to restore the state.
+	 * @return an AutoCloseable that will call {@link #restore}, for use with
+	 * 		a try-with-resources
 	 */
-	void save();
+	@NonNull
+	@UIEffect
+	Restorer save();
 	/**
 	 * Pops and restores a previous render state.
 	 */
+	@UIEffect
 	void restore();
 	/**
 	 * Resets the current render state to default values.
 	 * <p>
 	 * Does not affect the render state stack.
 	 */
+	@UIEffect
 	void reset();
+	/**
+	 * Run the given Runnable surrounded in a {@link #save} and {@link #restore}
+	 * <p>
+	 * The Runnable will run immediately on the current thread.
+	 * @param r The runnable to run
+	 */
+	@UIEffect
+	default void isolate(@NonNull Runnable r) {
+		try (Restorer rst = save()) {
+			r.run();
+		}
+	}
 	
 	/**
 	 * Sets the current stroke style to a solid color.
@@ -264,7 +303,8 @@ public interface Canvas {
 	 * @see #colorFromRGB
 	 * @see #colorFromRGBA
 	 */
-	void strokeStyle(Color color);
+	@UIEffect
+	void strokeStyle(@NonNull Color color);
 	/**
 	 * Sets the current stroke style to a paint, such as a gradient or pattern.
 	 * @param paint The paint to use
@@ -273,7 +313,8 @@ public interface Canvas {
 	 * @see #createRadialGradient
 	 * @see #createPattern
 	 */
-	void strokeStyle(Paint paint);
+	@UIEffect
+	void strokeStyle(@NonNull Paint paint);
 	
 	/**
 	 * Sets the current fill style to a solid color;
@@ -285,7 +326,8 @@ public interface Canvas {
 	 * @see #colorFromRGB
 	 * @see #colorFromRGBA
 	 */
-	void fillStyle(Color color);
+	@UIEffect
+	void fillStyle(@NonNull Color color);
 	/**
 	 * Sets the current fill style to a paint, such as a gradient or pattern.
 	 * @param paint The paint to use
@@ -294,7 +336,8 @@ public interface Canvas {
 	 * @see #createRadialGradient
 	 * @see #createPattern
 	 */
-	void fillStyle(Paint paint);
+	@UIEffect
+	void fillStyle(@NonNull Paint paint);
 	
 	
 	/**
@@ -303,25 +346,29 @@ public interface Canvas {
 	 * The Miter limit controls when a sharp corner is beveled.
 	 * @param limit The Miter limit
 	 */
+	@UIEffect
 	void strokeMiterLimit(float limit);
 	
 	/**
 	 * Sets the width of the stroke.
 	 * @param size The size to use for the stroke
 	 */
+	@UIEffect
 	void strokeWidth(float size);
 	
 	/**
 	 * Sets how the end of a line in an open path is drawn.
 	 * @param cap The type of cap
 	 */
-	void strokeCap(StrokeCap cap);
+	@UIEffect
+	void strokeCap(@NonNull StrokeCap cap);
 	
 	/**
 	 * Sets how sharp path corners are drawn.
 	 * @param join The type of join
 	 */
-	void strokeJoin(StrokeJoin join);
+	@UIEffect
+	void strokeJoin(@NonNull StrokeJoin join);
 	
 	
 	/**
@@ -329,6 +376,7 @@ public interface Canvas {
 	 * @param alpha The alpha, from 0-1. 0 is fully transparent, 1 is fully
 	 * 		opaque
 	 */
+	@UIEffect
 	void alpha(float alpha);
 	/**
 	 * Sets the composite operation.
@@ -360,17 +408,20 @@ public interface Canvas {
 	/**
 	 * Resets the current transform to an identity matrix.
 	 */
+	@UIEffect
 	void resetTransform();
 	/**
 	 * Translates the current coordinate system.
 	 * @param x The distance to translate horizontally
 	 * @param y The distance to translate vertically
 	 */
+	@UIEffect
 	void translate(float x, float y);
 	/**
 	 * Rotates the current coordinate system.
 	 * @param angle The angle to rotate by, specified in <b>radians</b>.
 	 */
+	@UIEffect
 	void rotate(float angle);
 	/**
 	 * Skews the current coordinate system.
@@ -379,6 +430,7 @@ public interface Canvas {
 	 * @param angleY The angle to skew by, vertically. Specified in
 	 * 		<b>radians</b>.
 	 */
+	@UIEffect
 	void skew(float angleX, float angleY);
 	/**
 	 * Scales the current coordinate system.
@@ -387,6 +439,7 @@ public interface Canvas {
 	 * @param x The amount to scale vertically. 1 is unchanged, 0.5 is
 	 * 		half the size, 2 is twice the size.
 	 */
+	@UIEffect
 	void scale(float x, float y);
 	
 	
@@ -396,6 +449,7 @@ public interface Canvas {
 	 * @param deg The angle in degrees
 	 * @return The angle in radians
 	 */
+	@SafeEffect
 	default float degToRad(float deg) {
 		return (float)Math.toRadians(deg);
 	}
@@ -405,6 +459,7 @@ public interface Canvas {
 	 * @param rad The angle in radians
 	 * @return The angle in degrees
 	 */
+	@SafeEffect
 	default float radToDeg(float rad) {
 		return (float)Math.toDegrees(rad);
 	}
@@ -414,8 +469,10 @@ public interface Canvas {
 	 * Convert the given Java AWT image into a Canvas image.
 	 * @param img The BufferedImage to convert
 	 * @param modes Any special modes to apply to the image
-	 * @return A newly allocated Image
+	 * @return A newly allocated Image, or null if it could not be created
 	 */
+	@UIEffect
+	@Nullable
 	Image createImage(BufferedImage img, ImageMode... modes);
 	/**
 	 * Load the given filename from disk into a Canvas image.
@@ -426,8 +483,10 @@ public interface Canvas {
 	 * for user data.
 	 * @param file The file to load from disk
 	 * @param modes Any special modes to apply to the image
-	 * @return A newly allocated Image
+	 * @return A newly allocated Image, or null if it could not be created
 	 */
+	@UIEffect
+	@Nullable
 	Image createImage(File file, ImageMode... modes);
 	/**
 	 * Load the given filename from the classpath into a Canvas image.
@@ -435,8 +494,10 @@ public interface Canvas {
 	 * Supports JPG, PNG, PSD, TGA, PIC, and GIF, with <a href="https://github.com/nothings/stb/blob/master/stb_image.h#L19">some limitations</a>.
 	 * @param path The file to load off the classpath
 	 * @param modes Any special modes to apply to the image
-	 * @return A newly allocated Image
+	 * @return A newly allocated Image, or null if it could not be created
 	 */
+	@UIEffect
+	@Nullable
 	Image createImage(String path, ImageMode... modes);
 	
 	/**
@@ -447,8 +508,10 @@ public interface Canvas {
 	 * @param endY The vertical end coordinate
 	 * @param start The start color (will become the Inner color)
 	 * @param end The end color (will become the Outer color)
-	 * @return A newly allocated Paint
+	 * @return A newly allocated Paint, or null if it could not be created
 	 */
+	@UIEffect
+	@Nullable
 	Paint createLinearGradient(float startX, float startY, float endX, float endY,
 			Color start, Color end);
 	/**
@@ -462,8 +525,10 @@ public interface Canvas {
 	 * @param feather How blurry to make the rectangle
 	 * @param inner The inner color
 	 * @param outer The outer color
-	 * @return A newly allocated Paint
+	 * @return A newly allocated Paint, or null if it could not be created
 	 */
+	@UIEffect
+	@Nullable
 	Paint createBoxGradient(float x, float y, float width, float height,
 			float radius, float feather, Color inner, Color outer);
 	/**
@@ -474,8 +539,10 @@ public interface Canvas {
 	 * @param outerRadius The outer radius of the gradient
 	 * @param inner The inner color
 	 * @param outer The outer color
-	 * @return A newly allocated Paint
+	 * @return A newly allocated Paint, or null if it could not be created
 	 */
+	@UIEffect
+	@Nullable
 	Paint createRadialGradient(float centerX, float centerY,
 			float innerRadius, float outerRadius, Color inner, Color outer);
 	/**
@@ -487,11 +554,13 @@ public interface Canvas {
 	 * @param angle The angle to rotate the entire pattern by, in <b>radians</b>
 	 * @param image The image to use
 	 * @param alpha The opacity, 1 being opaque, 0 being transparent
-	 * @return A newly allocated Paint
+	 * @return A newly allocated Paint, or null if it could not be created
 	 * @see #createImage(BufferedImage)
 	 * @see #createImage(File)
 	 * @see #createImage(String)
 	 */
+	@UIEffect
+	@Nullable
 	Paint createPattern(float x, float y, float width, float height,
 			float angle, Image image, float alpha);
 	
@@ -504,6 +573,7 @@ public interface Canvas {
 	 * @param width The width of the rectangle
 	 * @param height The height of the rectangle
 	 */
+	@UIEffect
 	void scissor(float x, float y, float width, float height);
 	/**
 	 * Intersects the current scissor rectangle with the specified rectangle.
@@ -517,22 +587,26 @@ public interface Canvas {
 	 * @param width The width of the rectangle
 	 * @param height The height of the rectangle
 	 */
+	@UIEffect
 	void intersectScissor(float x, float y, float width, float height);
 	/**
 	 * Resets the scissor rectangle and disables scissoring.
 	 */
+	@UIEffect
 	void resetScissor();
 	
 	
 	/**
 	 * Clear the current path and sub-paths.
 	 */
+	@UIEffect
 	void beginPath();
 	/**
 	 * Starts a new sub-path with the specified point as its first point.
 	 * @param x The horizontal position
 	 * @param y The vertical position
 	 */
+	@UIEffect
 	void moveTo(float x, float y);
 	/**
 	 * Adds a line segment from the last point in the path to the specified
@@ -540,6 +614,7 @@ public interface Canvas {
 	 * @param x The horizontal position
 	 * @param y The vertical position
 	 */
+	@UIEffect
 	void lineTo(float x, float y);
 	/**
 	 * Adds a cubic Bezier segment from the last point in the path via two
@@ -551,6 +626,7 @@ public interface Canvas {
 	 * @param x The horizontal position to draw to
 	 * @param y The vertical position to draw to
 	 */
+	@UIEffect
 	void bezierTo(float control1x, float control1y,
 			float control2x, float control2y, float x, float y);
 	/**
@@ -561,6 +637,7 @@ public interface Canvas {
 	 * @param x The horizontal position to draw to
 	 * @param y The vertical position to draw to
 	 */
+	@UIEffect
 	void quadTo(float controlX, float controlY, float x, float y);
 	/**
 	 * Adds an arc segment at the corner defined by the last path point, and
@@ -571,11 +648,13 @@ public interface Canvas {
 	 * @param control2y The second control point's vertical position
 	 * @param radius The arc's radius
 	 */
+	@UIEffect
 	void arcTo(float control1x, float control1y,
 			float control2x, float control2y, float radius);
 	/**
 	 * Closes the current sub-path with a line segment.
 	 */
+	@UIEffect
 	void closePath();
 	/**
 	 * Sets the current sub-path winding.
@@ -585,7 +664,8 @@ public interface Canvas {
 	 * @see Winding#CCW
 	 * @see Winding#CW
 	 */
-	void pathWinding(Winding winding);
+	@UIEffect
+	void pathWinding(@NonNull Winding winding);
 	/**
 	 * Creates a new circle arc shaped sub-path.
 	 * @param centerX The horizontal center of the arc
@@ -597,8 +677,9 @@ public interface Canvas {
 	 * @see Winding#CCW
 	 * @see Winding#CW
 	 */
+	@UIEffect
 	void arc(float centerX, float centerY, float radius,
-			float angleStart, float angleEnd, Winding winding);
+			float angleStart, float angleEnd, @NonNull Winding winding);
 	/**
 	 * Creates a new rectangular sub-path.
 	 * @param x The horizontal position of the rectangle
@@ -606,6 +687,7 @@ public interface Canvas {
 	 * @param width The width of the rectangle
 	 * @param height The height of the rectangle
 	 */
+	@UIEffect
 	void rect(float x, float y, float width, float height);
 	/**
 	 * Creates a new rounded rectangle sub-path, with all corners having the
@@ -616,6 +698,7 @@ public interface Canvas {
 	 * @param height The height of the rectangle
 	 * @param radius The radius of each corner
 	 */
+	@UIEffect
 	void roundedRect(float x, float y, float width, float height, float radius);
 	/**
 	 * Creates a new rounded rectangular sub-path, with each corner having its
@@ -642,6 +725,7 @@ public interface Canvas {
 	 * @param radiusX The horizontal radius of the ellipse
 	 * @param radiusY The vertical radius of the ellipse
 	 */
+	@UIEffect
 	void ellipse(float centerX, float centerY, float radiusX, float radiusY);
 	/**
 	 * Creates a new circular sub-path.
@@ -649,6 +733,7 @@ public interface Canvas {
 	 * @param centerY The vertical position of the center
 	 * @param radius The radius of the circle.
 	 */
+	@UIEffect
 	void circle(float centerX, float centerY, float radius);
 	/**
 	 * Fills the current path with the current fill style.
@@ -661,6 +746,7 @@ public interface Canvas {
 	 * @see #strokeStyle(Color)
 	 * @see #strokeStyle(Paint)
 	 */
+	@UIEffect
 	void stroke();
 	
 	
@@ -669,7 +755,10 @@ public interface Canvas {
 	 * Load a TrueType font off the classpath, with <a href="https://github.com/nothings/stb/blob/master/stb_truetype.h">some limitations</a>.
 	 * @param name The name of the font family and style, such as "Roboto Light"
 	 * @param path The path of the font file
+	 * @return A newly allocated Font, or null if it could not be loaded
 	 */
+	@UIEffect
+	@Nullable
 	Font createFont(String name, String path);
 	/**
 	 * Load a TrueType font from a file, with <a href="https://github.com/nothings/stb/blob/master/stb_truetype.h">some limitations</a>.
@@ -677,7 +766,10 @@ public interface Canvas {
 	 * Avoid using user-specified fonts, they may not render correctly.
 	 * @param name The name of the font family and style, such as "Roboto Light"
 	 * @param file The file to read from
+	 * @return A newly allocated Font, or null if it could not be loaded
 	 */
+	@UIEffect
+	@Nullable
 	Font loadFont(String name, File file);
 	
 	/**
@@ -685,6 +777,8 @@ public interface Canvas {
 	 * @param name The name of the font to look for
 	 * @return The Font, or null
 	 */
+	@UIEffect
+	@Nullable
 	Font findFont(String name);
 	/**
 	 * Adds a fallback font.
@@ -699,22 +793,26 @@ public interface Canvas {
 	 * Sets the font size of the current text style.
 	 * @param size The size of the text
 	 */
+	@UIEffect
 	void textSize(float size);
 	/**
 	 * Sets the blur of the current text style.
 	 * @param blur The amount to blur
 	 */
+	@UIEffect
 	void textBlur(float blur);
 	/**
 	 * Sets the letter spacing of the current text style.
 	 * @param spacing The letter spacing
 	 */
+	@UIEffect
 	void textLetterSpacing(float spacing);
 	/**
 	 * Sets the proportional line height of the current text style.
 	 * @param lineHeight The line height, specified as a multiple of the font
 	 * 		size
 	 */
+	@UIEffect
 	void textLineHeight(float lineHeight);
 	/**
 	 * Sets the alignment of the current text style. See {@link HorizontalAlign}
@@ -722,12 +820,15 @@ public interface Canvas {
 	 * @param horizontal The horizontal alignment
 	 * @param vertical The vertical alignment
 	 */
-	void textAlign(HorizontalAlign horizontal, VerticalAlign vertical);
+	@UIEffect
+	void textAlign(@NonNull HorizontalAlign horizontal,
+			@NonNull VerticalAlign vertical);
 	/**
 	 * Sets the font face to use for text drawing.
 	 * @param font The font to use
 	 */
-	void fontFace(Font font);
+	@UIEffect
+	void fontFace(@NonNull Font font);
 	
 	/**
 	 * Draws the text string at the specified location.
@@ -739,7 +840,8 @@ public interface Canvas {
 	 * @param y The vertical position to draw the text at
 	 * @param string The string to draw
 	 */
-	void drawText(float x, float y, String string);
+	@UIEffect
+	void drawText(float x, float y, @NonNull String string);
 	/**
 	 * Draws the text string at the specified location, wrapped at the specified
 	 * width.
@@ -758,7 +860,8 @@ public interface Canvas {
 	 * @param breakWidth The width to split text at
 	 * @param string The string to draw
 	 */
-	void drawTextBox(float x, float y, float breakWidth, String string);
+	@UIEffect
+	void drawTextBox(float x, float y, float breakWidth, @NonNull String string);
 	
 	
 	
@@ -770,6 +873,8 @@ public interface Canvas {
 	 * @param rgb A packed 24-bit _RGB value, where _ is unused
 	 * @return A newly allocated Color with the given value
 	 */
+	@SafeEffect
+	@NonNull
 	Color colorFromPackedRGB(int rgb);
 	/**
 	 * Create a Color from a packed ARGB value.
@@ -778,6 +883,8 @@ public interface Canvas {
 	 * @param rgb A packed 32-bit ARGB value
 	 * @return A newly allocated Color with the given value
 	 */
+	@SafeEffect
+	@NonNull
 	Color colorFromPackedARGB(int argb);
 	
 	
@@ -789,6 +896,8 @@ public interface Canvas {
 	 * @param b The blue value, from 0-1
 	 * @return A newly allocated Color with the given value
 	 */
+	@SafeEffect
+	@NonNull
 	Color colorFromRGB(float r, float g, float b);
 	/**
 	 * Create a Color from individual red, green, blue, and alpha components.
@@ -799,6 +908,8 @@ public interface Canvas {
 	 * @param a The alpha value, from 0-1
 	 * @return A newly allocated Color with the given value
 	 */
+	@SafeEffect
+	@NonNull
 	Color colorFromRGBA(float r, float g, float b, float a);
 	
 	
@@ -810,6 +921,8 @@ public interface Canvas {
 	 * @param l The lightness, from 0-1, where 0 is black and 1 is white.
 	 * @return A newly allocated Color with the given value
 	 */
+	@SafeEffect
+	@NonNull
 	Color colorFromHSL(float h, float s, float l);
 	/**
 	 * Create a Color from hue, saturation, lightness, and alpha.
@@ -820,6 +933,8 @@ public interface Canvas {
 	 * @param a The alpha value, from 0-1
 	 * @return A newly allocated Color with the given value
 	 */
+	@SafeEffect
+	@NonNull
 	Color colorFromHSLA(float h, float s, float l, float a);
 	
 	
@@ -832,6 +947,8 @@ public interface Canvas {
 	 * 		{@code c1}.
 	 * @return A newly allocated Color, even if u is 0 or 1.
 	 */
-	Color lerp(Color c0, Color c1, float u);
+	@SafeEffect
+	@NonNull
+	Color lerp(@NonNull Color c0, @NonNull Color c1, float u);
 	
 }

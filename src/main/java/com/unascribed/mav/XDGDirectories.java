@@ -17,34 +17,17 @@
 
 package com.unascribed.mav;
 
-import org.checkerframework.checker.i18n.qual.LocalizableKey;
-import org.checkerframework.checker.propkey.qual.PropertyKey;
-
-public class Panic extends Error {
-	private static final long serialVersionUID = -8494908034465131450L;
-
-	@LocalizableKey @PropertyKey
-	private final String key;
-	private final Object[] args;
+/**
+ * Basic implementation of the <a href="https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html">XDG Base Directory Specification</a>,
+ * in Java (obviously).
+ */
+public class XDGDirectories {
+	private final String appName;
 	
-	public Panic(@LocalizableKey @PropertyKey String key) {
-		this.key = key;
-		this.args = new Object[0];
+	public XDGDirectories(String appName) {
+		this.appName = appName;
 	}
 	
-	public Panic(@LocalizableKey @PropertyKey String key, Object... args) {
-		this.key = key;
-		this.args = args;
-	}
+	// TODO
 	
-	@Override
-	public String getMessage() {
-		return I18n.getDefault(key, args);
-	}
-	
-	@Override
-	public String getLocalizedMessage() {
-		return I18n.get(key, args);
-	}
-
 }

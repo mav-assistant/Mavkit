@@ -13,8 +13,10 @@ group = 'com.unascribed'
 archivesBaseName = 'Mav'
 version = '0.0.1'
 
-sourceCompatibility = 8
-targetCompatibility = 8
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+ext.targetJavaVersion = JavaVersion.VERSION_1_8
 
 repositories {
 	mavenCentral()
@@ -34,8 +36,9 @@ configurations {
 	font
 	bundle
 	capsule
-	quasar
 	provided
+	checkerFrameworkAnnotatedJDK
+	checkerFramework
 }
 
 project.ext.lwjglVersion = "3.0.0"
@@ -62,6 +65,10 @@ dependencies {
 	
 	compile 'org.slf4j:slf4j-simple:1.7.13'
 	compile 'com.google.guava:guava:19.0'
+	compile 'org.ow2.asm:asm:5.1'
+	// we want both of these so that Checker Framework can find Guava's annotations
+	compile "org.checkerframework:checker-qual:2.1.4"
+	compile 'com.google.code.findbugs:jsr305:3.0.1'
 	
 	
 	font 'google/fonts:apache/roboto/Roboto-Light:90abd17b@ttf'
@@ -80,6 +87,25 @@ dependencies {
 		exclude group: 'foxtrot', module: '*'
 	}
 	bundle 'co.paralleluniverse:capsule-desktop:0.1.0'
+	
+	checkerFrameworkAnnotatedJDK "org.checkerframework:jdk8:2.1.4"
+
+	checkerFramework "org.checkerframework:checker:2.1.4"
+}
+
+tasks.withType(JavaCompile).all { JavaCompile compile ->
+	compile.options.compilerArgs = [
+		'-processor', 'org.checkerframework.checker.nullness.NullnessChecker,'+
+		              'org.checkerframework.checker.tainting.TaintingChecker,'+
+		              'org.checkerframework.checker.regex.RegexChecker,'+
+		              'org.checkerframework.checker.propkey.PropertyKeyChecker,'+
+		              'org.checkerframework.checker.i18n.I18nChecker,'+
+		              //'org.checkerframework.checker.guieffect.GuiEffectChecker,'+
+		              'org.checkerframework.checker.signedness.SignednessChecker',
+		'-Apropfiles=src/main/resources/com/unascribed/mav/lang.properties',
+		'-processorpath', "${configurations.checkerFramework.asPath}",
+		"-Xbootclasspath/p:${configurations.checkerFrameworkAnnotatedJDK.asPath}"
+	]
 }
 
 def priv = new Properties();
