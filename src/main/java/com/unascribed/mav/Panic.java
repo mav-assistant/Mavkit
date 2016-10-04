@@ -17,16 +17,30 @@
 
 package com.unascribed.mav;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public class Panic extends Error {
+	private static final long serialVersionUID = -8494908034465131450L;
 
-public class Bootstrap {
-
-	private static Logger log = LoggerFactory.getLogger("Bootstrap");
+	private final String key;
+	private final Object[] args;
 	
-	
-	public static void main(String[] args) {
-		new Mav().initialize();
+	public Panic(String key) {
+		this.key = key;
+		this.args = new Object[0];
 	}
 	
+	public Panic(String key, Object... args) {
+		this.key = key;
+		this.args = args;
+	}
+	
+	@Override
+	public String getMessage() {
+		return I18n.getDefault(key, args);
+	}
+	
+	@Override
+	public String getLocalizedMessage() {
+		return I18n.get(key, args);
+	}
+
 }

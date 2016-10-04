@@ -15,18 +15,24 @@
  * along with Mav. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.unascribed.mav;
+package com.unascribed.mav.internal.canvas.gl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.lwjgl.opengl.GL11.*;
 
-public class Bootstrap {
+import com.unascribed.mav.Mav;
+import com.unascribed.mav.internal.canvas.NanoVGCanvas;
 
-	private static Logger log = LoggerFactory.getLogger("Bootstrap");
-	
-	
-	public static void main(String[] args) {
-		new Mav().initialize();
+public abstract class NanoVGGLCanvas extends NanoVGCanvas {
+
+	public NanoVGGLCanvas(Mav mav, long ctx) {
+		super(mav, ctx);
+		glClearColor(1, 1, 1, 1);
 	}
 	
+	@Override
+	public void beginFrame() {
+		glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		super.beginFrame();
+	}
+
 }

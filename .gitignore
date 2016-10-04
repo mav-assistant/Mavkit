@@ -15,3 +15,5 @@
 /bin/
 .settings
 /build/
+private.properties
+*.ttf

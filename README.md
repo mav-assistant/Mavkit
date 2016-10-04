@@ -11,7 +11,7 @@ recognition engine, etc.
 ## Todo
 
  - [ ] Basic audio engine
- - [ ] Basic rendering engine
+ - [*] Basic rendering engine
  - [ ] Data/config directory (conforming to XDG Base Directory spec)
  - [ ] Plugin system
  - [ ] ASR

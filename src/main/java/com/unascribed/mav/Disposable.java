@@ -17,16 +17,11 @@
 
 package com.unascribed.mav;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class Bootstrap {
-
-	private static Logger log = LoggerFactory.getLogger("Bootstrap");
-	
-	
-	public static void main(String[] args) {
-		new Mav().initialize();
-	}
-	
+public interface Disposable {
+	/**
+	 * Free any resources used by this object. After calling this method,
+	 * calling other methods on the object is illegal and will result in
+	 * undefined behavior.
+	 */
+	void dispose();
 }

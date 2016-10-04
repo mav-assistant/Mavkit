@@ -15,18 +15,17 @@
  * along with Mav. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.unascribed.mav;
+package com.unascribed.mav.internal.canvas.gl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.lwjgl.nanovg.NanoVGGL3.*;
 
-public class Bootstrap {
+import com.unascribed.mav.Mav;
 
-	private static Logger log = LoggerFactory.getLogger("Bootstrap");
-	
-	
-	public static void main(String[] args) {
-		new Mav().initialize();
+/**
+ * Implementation of Canvas on top of NanoVG, using OpenGL 3.
+ */
+public class NanoVGGL3Canvas extends NanoVGGLCanvas {
+	public NanoVGGL3Canvas(Mav mav) {
+		super(mav, nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES));
 	}
-	
 }
