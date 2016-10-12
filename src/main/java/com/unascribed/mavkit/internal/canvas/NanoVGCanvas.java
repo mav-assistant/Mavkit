@@ -1,21 +1,21 @@
 /*
- * This file is part of Mav.
+ * This file is part of Mavkit.
  *
- * Mav is free software: you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License as published by the Free
+ * Mavkit is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
- * Mav is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Mavkit is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
  * details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Mav. If not, see <http://www.gnu.org/licenses/>.
+ * along with Mavkit. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.unascribed.mav.internal.canvas;
+package com.unascribed.mavkit.internal.canvas;
 
 import static org.lwjgl.nanovg.NanoVG.*;
 
@@ -44,8 +44,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Maps;
-import com.unascribed.mav.Mav;
-import com.unascribed.mav.render.Canvas;
+import com.unascribed.mavkit.Mavkit;
+import com.unascribed.mavkit.render.Canvas;
 
 /**
  * Implementation of Canvas on top of NanoVG.
@@ -227,10 +227,10 @@ public abstract class NanoVGCanvas implements Canvas {
 	}
 	
 	
-	private final Mav mav;
+	private final Mavkit mav;
 	private final long ctx;
 	private final Map<Integer, NanoVGFont> fonts = Maps.newHashMap();
-	public NanoVGCanvas(@NonNull Mav mav, long ctx) {
+	public NanoVGCanvas(@NonNull Mavkit mav, long ctx) {
 		this.mav = mav;
 		this.ctx = ctx;
 	}

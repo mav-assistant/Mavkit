@@ -1,21 +1,21 @@
 /*
- * This file is part of Mav.
+ * This file is part of Mavkit.
  *
- * Mav is free software: you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License as published by the Free
+ * Mavkit is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
- * Mav is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Mavkit is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
  * details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Mav. If not, see <http://www.gnu.org/licenses/>.
+ * along with Mavkit. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.unascribed.mav;
+package com.unascribed.mavkit;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +25,9 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.PosixFilePermissions;
+
+import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.PolyNull;
 import org.lwjgl.system.Platform;
@@ -39,6 +42,7 @@ public class XDGDirectories {
 	private static final Logger log = LoggerFactory.getLogger("XDGDirectories");
 	
 	private final String appName;
+	@MonotonicNonNull
 	private File runtimeDir;
 	
 	public XDGDirectories(String appName) {
@@ -81,6 +85,7 @@ public class XDGDirectories {
 	 * 		named pipes, ...) should be stored.
 	 */
 	@NonNull
+	@EnsuresNonNull("this.runtimeDir")
 	public File getRuntimeDir() {
 		if (runtimeDir != null) return runtimeDir;
 		File dir = getBaseDir("XDG_RUNTIME_DIR", null);
@@ -107,11 +112,14 @@ public class XDGDirectories {
 		try {
 			Files.setPosixFilePermissions(dir.toPath(), PosixFilePermissions.fromString("rwx------"));
 		} catch (IOException | UnsupportedOperationException e) {
-			log.warn("Failed to set directory permissions on {} to owner-only", dir, e);
+			if (Platform.get() != Platform.WINDOWS) {
+				log.warn("Failed to set directory permissions on {} to owner-only", dir, e);
+			}
 		}
 		runtimeDir = dir;
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			try {
+				if (runtimeDir == null) return;
 				Files.walkFileTree(runtimeDir.toPath(), new SimpleFileVisitor<Path>() {
 					@Override
 					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -133,7 +141,7 @@ public class XDGDirectories {
 	}
 
 	@PolyNull
-	private File getBaseDir(@NonNull String env, String def) {
+	private File getBaseDir(@NonNull String env, @PolyNull String def) {
 		String home = System.getenv("HOME");
 		if (home == null || home.trim().isEmpty()) {
 			// Since we require Java 8, this is safe. On 7 and earlier, this

@@ -1,21 +1,21 @@
 /*
- * This file is part of Mav.
+ * This file is part of Mavkit.
  *
- * Mav is free software: you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License as published by the Free
+ * Mavkit is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
- * Mav is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Mavkit is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
  * details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Mav. If not, see <http://www.gnu.org/licenses/>.
+ * along with Mavkit. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.unascribed.mav;
+package com.unascribed.mavkit;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.List;
@@ -24,23 +24,15 @@ import java.util.concurrent.CountDownLatch;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
-import com.unascribed.mav.render.InterfaceRenderer;
+import com.unascribed.mavkit.render.InterfaceRenderer;
 
-public final class Mav {
+public final class Mavkit {
 	private static Logger log = LoggerFactory.getLogger("Mav");
-	
-	@NonNull
-	private final String version;
-	@Nullable
-	private final String googleApiKey;
 	
 	private final Display display;
 	private final InterfaceRenderer interfaceRenderer;
@@ -48,22 +40,9 @@ public final class Mav {
 	
 	private final List<Object> keepAlive = Lists.newArrayList();
 	
-	private static final String[] initMessages = {
-		"Mav {} at your service.",
-		"Initializing Mav version {}",
-		"Hello, World! This is Mav {}",
-	};
-	
-	public Mav() {
+	public Mavkit() {
 		Thread.currentThread().setName("Main thread");
-		
-		version = System.getProperty("com.unascribed.mav.version", I18n.get("application.versionPlaceholder"));
-		log.info(initMessages[(int)(Math.random()*initMessages.length)], version);
-		String googleApiKey = Strings.emptyToNull(System.getProperty("com.unascribed.mav.googleApiKey"));
-		if ("MY-API-KEY".equals(googleApiKey)) {
-			googleApiKey = null;
-		}
-		this.googleApiKey = googleApiKey;
+		log.info("Starting Mavkit");
 		
 		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 			@Override
@@ -74,7 +53,7 @@ public final class Mav {
 					if (e instanceof Panic) {
 						log.error("Panic!", e);
 						setLaF();
-						JOptionPane.showMessageDialog(null, I18n.get("dialog.panic.title")+e.getLocalizedMessage(), I18n.get("window.title", version), JOptionPane.ERROR_MESSAGE, null);
+						JOptionPane.showMessageDialog(null, I18n.get("dialog.panic.title")+e.getLocalizedMessage(), I18n.get("window.title"), JOptionPane.ERROR_MESSAGE, null);
 						System.exit(2);
 					} else {
 						log.error("{} died", t.getName(), e);
@@ -82,7 +61,7 @@ public final class Mav {
 								|| "UI thread".equals(t.getName())
 								|| "Audio thread".equals(t.getName())) {
 							setLaF();
-							JOptionPane.showMessageDialog(null, I18n.get("dialog.error.title")+Throwables.getStackTraceAsString(e), I18n.get("window.title", version), JOptionPane.ERROR_MESSAGE, null);
+							JOptionPane.showMessageDialog(null, I18n.get("dialog.error.title")+Throwables.getStackTraceAsString(e), I18n.get("window.title"), JOptionPane.ERROR_MESSAGE, null);
 							System.exit(1);
 						}
 					}
@@ -123,7 +102,7 @@ public final class Mav {
 		}
 	}
 	
-	private void setLaF() {
+	private static void setLaF() {
 		try {
 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
 			log.info("Using GTK+ LaF for error dialogs.");
@@ -141,15 +120,6 @@ public final class Mav {
 		return display;
 	}
 	
-	public String getVersion() {
-		return version;
-	}
-
-	@Nullable
-	public String getGoogleApiKey() {
-		return googleApiKey;
-	}
-
 	/**
 	 * Prevent the passed object from being garbage-collected.
 	 */
@@ -164,5 +134,5 @@ public final class Mav {
 		keepAlive.remove(o);
 	}
 
-	
+
 }

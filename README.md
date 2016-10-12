@@ -1,9 +1,17 @@
-# Mav
-Mav is a personal assistant, focused on modularity. It's similar in concept to
-Google Now, Cortana, and Siri.
+# Mavkit
+Mavkit is a plugin-based engine for creating vector 2D hardware-accelerated
+applications, such as a [digital assistant](https://github.com/mav-assistant/mav-core)
+or a game.
 
-The plan is for the majority of functionality to be implemented via plugins,
-which includes the appearance of the assistant, the text-to-speech engine, the
-speech recognition engine, etc.
+It comes with:
+ * A 2D rendering system inspired by the HTML5 canvas, powered by NanoVG
+ * Support for OpenGL 2 and OpenGL ES 2, taking advantage of 3 when possible
+ * TrueType font support
+ * XDG Basedir support (your Linux users will thank you)
+ * Full support for Linux, Windows, and Mac (in order of priority)
 
-**Mav is not yet ready for use.** Once it is, this README will be filled in.
+Things it will come with, but aren't implemented yet:
+ * A widget-based UI
+ * Easy screenshots and videos
+ * Event-driven input system, with support for controllers
+ * Audio system

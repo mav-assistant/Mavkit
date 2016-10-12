@@ -1,21 +1,21 @@
 /*
- * This file is part of Mav.
+ * This file is part of Mavkit.
  *
- * Mav is free software: you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License as published by the Free
+ * Mavkit is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
- * Mav is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Mavkit is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
  * details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Mav. If not, see <http://www.gnu.org/licenses/>.
+ * along with Mavkit. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.unascribed.mav;
+package com.unascribed.mavkit;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -38,11 +38,11 @@ import org.lwjgl.system.APIUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.unascribed.mav.internal.canvas.gl.NanoVGGL2Canvas;
-import com.unascribed.mav.internal.canvas.gl.NanoVGGL3Canvas;
-import com.unascribed.mav.internal.canvas.gles.NanoVGGLES2Canvas;
-import com.unascribed.mav.internal.canvas.gles.NanoVGGLES3Canvas;
-import com.unascribed.mav.render.Canvas;
+import com.unascribed.mavkit.internal.canvas.gl.NanoVGGL2Canvas;
+import com.unascribed.mavkit.internal.canvas.gl.NanoVGGL3Canvas;
+import com.unascribed.mavkit.internal.canvas.gles.NanoVGGLES2Canvas;
+import com.unascribed.mavkit.internal.canvas.gles.NanoVGGLES3Canvas;
+import com.unascribed.mavkit.render.Canvas;
 
 public class Display {
 	private static final Logger log = LoggerFactory.getLogger("Display");
@@ -50,7 +50,7 @@ public class Display {
 	private static final int DEFAULT_HEIGHT = 480;
 	
 	@MonotonicNonNull
-	private Mav mav;
+	private Mavkit mav;
 	
 	private IntBuffer width = BufferUtils.createIntBuffer(1);
 	private IntBuffer height = BufferUtils.createIntBuffer(1);
@@ -61,9 +61,11 @@ public class Display {
 	
 	@EnsuresNonNull({"this.mav", "this.canvas"})
 	@UIEffect
-	public void start(Mav mav) {
+	public void start(Mavkit mav) {
 		this.mav = mav;
 		String[] lastError = new String[] { I18n.get("panic.glfwInitFailed.default") };
+		// Checker Framework is assuming @NonNull for all params on apiClassTokens
+		@SuppressWarnings("argument.type.incompatible")
 		Map<Integer, String> ERROR_CODES = APIUtil.apiClassTokens((field, value) -> 0x10000 < value && value < 0x20000, null, GLFW.class);
 		glfwSetErrorCallback(GLFWErrorCallback.create((e, d) -> {
 			lastError[0] = ERROR_CODES.get(e)+"\n"+GLFWErrorCallback.getDescription(d);
@@ -185,7 +187,7 @@ public class Display {
 	@RequiresNonNull("this.mav")
 	@UIEffect
 	private void createWindow() {
-		window = glfwCreateWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, I18n.get("window.title", mav.getVersion()), 0, 0);
+		window = glfwCreateWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, I18n.get("window.title"), 0, 0);
 		glfwMakeContextCurrent(window);
 	}
 	

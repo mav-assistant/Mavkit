@@ -1,29 +1,29 @@
 /*
- * This file is part of Mav.
+ * This file is part of Mavkit.
  *
- * Mav is free software: you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License as published by the Free
+ * Mavkit is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
- * Mav is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Mavkit is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
  * details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Mav. If not, see <http://www.gnu.org/licenses/>.
+ * along with Mavkit. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.unascribed.mav.widget;
+package com.unascribed.mavkit.widget;
 
 import java.util.List;
 
 import org.checkerframework.checker.guieffect.qual.UIEffect;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import com.google.common.collect.Lists;
-import com.unascribed.mav.render.Canvas;
-import com.unascribed.mav.render.Renderable;
+import com.unascribed.mavkit.render.Canvas;
+import com.unascribed.mavkit.render.Renderable;
 
 public abstract class Screen implements Renderable {
 	private List<Widget> widgets = Lists.newArrayList();

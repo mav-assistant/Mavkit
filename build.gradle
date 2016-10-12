@@ -3,6 +3,7 @@ plugins {
 	
 	id 'java'
 	id 'eclipse'
+	id 'maven'
 }
 
 license {
@@ -10,7 +11,7 @@ license {
 }
 
 group = 'com.unascribed'
-archivesBaseName = 'Mav'
+archivesBaseName = 'mavkit'
 version = '0.0.1'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -26,67 +27,26 @@ repositories {
 }
 
 configurations {
-	linux
-	macos
-	windows
-	allNatives
-	allNatives.extendsFrom linux
-	allNatives.extendsFrom macos
-	allNatives.extendsFrom windows
-	font
-	bundle
-	capsule
-	provided
 	checkerFrameworkAnnotatedJDK
 	checkerFramework
 }
 
 project.ext.lwjglVersion = "3.0.0"
 
-sourceSets {
-	main.compileClasspath = main.compileClasspath + configurations.provided
-	test.compileClasspath = test.compileClasspath + configurations.provided
-	test.runtimeClasspath = test.runtimeClasspath + configurations.provided
-}
-
 dependencies {
-	capsule 'co.paralleluniverse:capsule:1.0-rc2-SNAPSHOT'
-	capsule 'co.paralleluniverse:capsule-maven:1.0-rc2-SNAPSHOT'
-	provided 'co.paralleluniverse:capsule:1.0-rc2-SNAPSHOT'
-
 	compile "org.lwjgl:lwjgl:${lwjglVersion}"
-
-	linux "org.lwjgl:lwjgl-platform:${lwjglVersion}:natives-linux"
-	
-	macos "org.lwjgl:lwjgl-platform:${lwjglVersion}:natives-osx"
-	
-	windows "org.lwjgl:lwjgl-platform:${lwjglVersion}:natives-windows"
+	compile "org.lwjgl:lwjgl-platform:${lwjglVersion}:natives-linux"
+	compile "org.lwjgl:lwjgl-platform:${lwjglVersion}:natives-osx"
+	compile "org.lwjgl:lwjgl-platform:${lwjglVersion}:natives-windows"
 	
 	
 	compile 'org.slf4j:slf4j-simple:1.7.13'
 	compile 'com.google.guava:guava:19.0'
-	compile 'org.ow2.asm:asm:5.1'
 	// we want both of these so that Checker Framework can find Guava's annotations
 	compile "org.checkerframework:checker-qual:2.1.4"
 	compile 'com.google.code.findbugs:jsr305:3.0.1'
 	
-	
-	font 'google/fonts:apache/roboto/Roboto-Light:90abd17b@ttf'
-	font 'google/fonts:apache/roboto/Roboto-Regular:90abd17b@ttf'
-	font 'google/fonts:apache/roboto/Roboto-Medium:90abd17b@ttf'
-	
-	bundle 'co.paralleluniverse:capsule-util:1.0'
-	bundle 'net.sf.jopt-simple:jopt-simple:4.9'
-	bundle 'org.slf4j:slf4j-api:1.7.12'
-	bundle 'ch.qos.logback:logback-classic:1.1.3'
-	bundle("net.sf.launch4j:launch4j:3.5.0") {
-		exclude group: 'com.ibm.icu', module: 'icu4j'
-		exclude group: 'net.java.abeille', module: '*'
-		exclude group: 'org.apache.ant', module: '*'
-		exclude group: 'com.jgoodies', module: '*'
-		exclude group: 'foxtrot', module: '*'
-	}
-	bundle 'co.paralleluniverse:capsule-desktop:0.1.0'
+	compile 'org.ow2.asm:asm:5.1'
 	
 	checkerFrameworkAnnotatedJDK "org.checkerframework:jdk8:2.1.4"
 
@@ -102,200 +62,11 @@ tasks.withType(JavaCompile).all { JavaCompile compile ->
 		              'org.checkerframework.checker.i18n.I18nChecker,'+
 		              //'org.checkerframework.checker.guieffect.GuiEffectChecker,'+
 		              'org.checkerframework.checker.signedness.SignednessChecker',
-		'-Apropfiles=src/main/resources/com/unascribed/mav/lang.properties',
+		'-Apropfiles=src/main/resources/com/unascribed/mavkit/lang.properties',
 		'-processorpath', "${configurations.checkerFramework.asPath}",
 		"-Xbootclasspath/p:${configurations.checkerFrameworkAnnotatedJDK.asPath}"
 	]
 }
-
-def priv = new Properties();
-
-if (file('private.properties').exists()) {
-	file('private.properties').withReader {
-		priv.load(it);
-	}
-}
-
-jar {
-	configurations.font.each {
-		from(it) {
-			rename '(.*?)-(.*?)-.*?\\.ttf', '$1-$2.ttf'
-		}
-	}
-}
-
-tasks.eclipseClasspath.doLast {
-	configurations.font.each { font ->
-		copy {
-			from font
-			rename '(.*?)-(.*?)-.*?\\.ttf', '$1-$2.ttf'
-			into 'src/main/resources'
-		}
-	}
-}
-
-
-def getDependencies(config) {
-	return config.getAllDependencies().collect {
-		def res = it.group + ':' + it.name + ':' + it.version + (!it.artifacts.isEmpty() ? ':' + it.artifacts.iterator().next().classifier : '')
-		if(!it.excludeRules.isEmpty()) {
-			res += "(" + it.excludeRules.collect { it.group + ':' + it.module }.join(',') + ")"
-		}
-		return res
-	}
-}
-
-
-task run(type: JavaExec) {
-	standardInput = System.in
-
-	systemProperty 'com.unascribed.mav.version', project.version
-	if (priv.containsKey("google-api-key")) {
-		systemProperty 'com.unascribed.mav.googleApiKey', priv.getProperty("google-api-key")
-	} else {
-		println "No Google API key has been specified"
-	}
-}
-
-jar {
-	classifier = 'slim'
-}
-
-import org.gradle.api.java.archives.internal.DefaultManifest
-import org.gradle.api.internal.file.IdentityFileResolver
-
-Manifest baseManifest = new DefaultManifest(new IdentityFileResolver());
-baseManifest.attributes (
-	'Premain-Class': 'Capsule',
-	'Main-Class':  'Capsule',
-	'Application-Class': 'com.unascribed.mav.Bootstrap',
-	'Application-Name': 'Mav',
-	'Application-Version': project.version,
-	'Extract-Capsule': 'false',
-	'Application-Id': 'com.unascribed.mav',
-	'Min-Java-Version': '1.8.0',
-	
-	'JVM-Args': run.jvmArgs.join(' '),
-	'System-Properties': run.systemProperties.collect { k,v -> "$k=$v" }.join(' '),
-	'Dependencies': getDependencies(configurations.runtime).join(' '),
-	'Repositories': 'central',
-
-	'GUI': 'true',
-	'Icon': 'mav',
-	'Platforms': 'windows linux macos',
-	'Implementation-Vendor': 'Aesen "unascribed" Vismea',
-	'Native-Description': 'An open-source and modular digital assistant.',
-	'Copyright': '(c) 2016 Aesen "unascribed" Vismea and contributors',
-	'Internal-Name': 'com.unascribed.mav'
-)
-
-task onlineCapsule(type: Jar, dependsOn: classes) {
-	classifier = 'online'
-
-	from sourceSets.main.output
-
-	from { configurations.capsule.collect { zipTree(it) } }
-
-	duplicatesStrategy 'exclude'
-
-	manifest {
-		from baseManifest
-		
-		attributes ([
-			'Dependencies': getDependencies(configurations.linux).join(' ')
-		], 'linux')
-		attributes ([
-			'Dependencies': getDependencies(configurations.windows).join(' ')
-		], 'windows')
-		attributes ([
-			'Dependencies': getDependencies(configurations.macos).join(' ')
-		], 'macos')
-	}
-}
-
-task baseOfflineCapsule(type: Jar, dependsOn: jar) {
-	classifier = 'offline'
-
-	from jar
-	from { configurations.runtime }
-
-	from(configurations.capsule.collect { zipTree(it) }) { include 'Capsule.class' }
-	duplicatesStrategy 'exclude'
-
-	manifest {
-		from baseManifest
-	}
-}
-
-task offlineWindowsCapsule(type: Jar, dependsOn: baseOfflineCapsule) {
-dependsOn baseOfflineCapsule
-	classifier = 'offline-windows'
-	
-	from zipTree('build/libs/Mav-'+project.version+'-offline.jar')
-	
-	from { configurations.windows }
-	
-	manifest {
-		from baseManifest
-	}
-}
-
-task offlineMacCapsule(type: Jar, dependsOn: baseOfflineCapsule) {
-	dependsOn baseOfflineCapsule
-	classifier = 'offline-macos'
-	
-	from zipTree('build/libs/Mav-'+project.version+'-offline.jar')
-	
-	from { configurations.macos }
-	
-	manifest {
-		from baseManifest
-	}
-}
-
-task offlineLinuxCapsule(type: Jar, dependsOn: baseOfflineCapsule) {
-	dependsOn baseOfflineCapsule
-	classifier = 'offline-linux'
-	
-	from zipTree('build/libs/Mav-'+project.version+'-offline.jar')
-	
-	from { configurations.linux }
-	
-	manifest {
-		from baseManifest
-	}
-}
-
-task onlineBundle(type: JavaExec) {
-	dependsOn 'onlineCapsule'
-	classpath configurations.bundle
-	main = 'NativeCapsule'
-	args '--macosx', '--unix', '--windows', '--capsule', 'build/libs/Mav-'+project.version+'-online.jar'
-}
-
-task offlineWindowsBundle(type: JavaExec) {
-	dependsOn 'offlineWindowsCapsule'
-	classpath configurations.bundle
-	main = 'NativeCapsule'
-	args '--windows', '--capsule', 'build/libs/Mav-'+project.version+'-offline-windows.jar'
-}
-
-task offlineMacBundle(type: JavaExec) {
-	dependsOn 'offlineMacCapsule'
-	classpath configurations.bundle
-	main = 'NativeCapsule'
-	args '--macosx', '--capsule', 'build/libs/Mav-'+project.version+'-offline-macos.jar'
-}
-
-task offlineLinuxBundle(type: JavaExec) {
-	dependsOn 'offlineLinuxCapsule'
-	classpath configurations.bundle
-	main = 'NativeCapsule'
-	args '--unix', '--capsule', 'build/libs/Mav-'+project.version+'-offline-linux.jar'
-}
-
-build.dependsOn 'onlineBundle', 'offlineWindowsBundle', 'offlineMacBundle', 'offlineLinuxBundle'
-
 
 task wrapper(type: Wrapper) {
 	gradleVersion = '3.1'
