@@ -488,7 +488,7 @@ public interface Canvas {
 	 */
 	@UIEffect
 	@Nullable
-	Image createImage(File file, ImageMode... modes);
+	Image loadImage(File file, ImageMode... modes);
 	/**
 	 * Load the given filename from the classpath into a Canvas image.
 	 * <p>
@@ -499,7 +499,7 @@ public interface Canvas {
 	 */
 	@UIEffect
 	@Nullable
-	Image createImage(String path, ImageMode... modes);
+	Image loadImage(String path, ImageMode... modes);
 	
 	/**
 	 * Creates a linear gradient.
@@ -760,7 +760,7 @@ public interface Canvas {
 	 */
 	@UIEffect
 	@Nullable
-	Font createFont(String name, String path);
+	Font loadFont(String name, String path);
 	/**
 	 * Load a TrueType font from a file, with <a href="https://github.com/nothings/stb/blob/master/stb_truetype.h">some limitations</a>.
 	 * <p>

@@ -47,6 +47,9 @@ dependencies {
 	compile 'com.google.code.findbugs:jsr305:3.0.1'
 	
 	compile 'org.ow2.asm:asm:5.1'
+	compile 'net.sf.jopt-simple:jopt-simple:5.0.3'
+	compile 'net.java.dev.jna:jna:4.2.2'
+	compile 'net.java.dev.jna:jna-platform:4.2.2'
 	
 	checkerFrameworkAnnotatedJDK "org.checkerframework:jdk8:2.1.4"
 

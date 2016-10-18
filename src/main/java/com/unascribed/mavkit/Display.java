@@ -85,7 +85,7 @@ public class Display {
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 		
-		log.debug("Trying OpenGL 3.2");
+		log.debug("Trying OpenGL 3.0");
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -211,20 +211,20 @@ public class Display {
 		
 		if (es) {
 			if (major >= 3) {
-				log.info("Using OpenGL ES 3.0 rendering");
+				log.info("Using OpenGL ES 3 rendering");
 				canvas = new NanoVGGLES3Canvas(mav);
 			} else if (major >= 2) {
-				log.info("Using OpenGL ES 2.0 rendering");
+				log.info("Using OpenGL ES 2 rendering");
 				canvas = new NanoVGGLES2Canvas(mav);
 			} else {
 				throw new Panic("panic.noSuitableContext", I18n.get("panic.noSuitableContext.onlyGlEs", version));
 			}
 		} else {
-			if (major > 3 || (major >= 3 && minor >= 2)) {
-				log.info("Using OpenGL 3.2 rendering");
+			if (major >= 3) {
+				log.info("Using OpenGL 3 rendering");
 				canvas = new NanoVGGL3Canvas(mav);
 			} else if (major >= 2) {
-				log.info("Using OpenGL 2.0 rendering");
+				log.info("Using OpenGL 2 rendering");
 				canvas = new NanoVGGL2Canvas(mav);
 			} else {
 				throw new Panic("panic.noSuitableContext", I18n.get("panic.noSuitableContext.onlyGl", version));

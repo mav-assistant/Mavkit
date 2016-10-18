@@ -521,7 +521,7 @@ public abstract class NanoVGCanvas implements Canvas {
 
 	@Override
 	@Nullable
-	public Image createImage(@NonNull File file, ImageMode... modes) {
+	public Image loadImage(@NonNull File file, ImageMode... modes) {
 		int nvg = convert(modes);
 		ByteBuffer data = load(file.getAbsolutePath());
 		int handle = nvgCreateImageMem(ctx, nvg, data);
@@ -531,7 +531,7 @@ public abstract class NanoVGCanvas implements Canvas {
 
 	@Override
 	@Nullable
-	public Image createImage(@NonNull String path, ImageMode... modes) {
+	public Image loadImage(@NonNull String path, ImageMode... modes) {
 		int nvg = convert(modes);
 		ByteBuffer data = load(path);
 		int handle = nvgCreateImageMem(ctx, nvg, data);
@@ -691,7 +691,7 @@ public abstract class NanoVGCanvas implements Canvas {
 
 	@Override
 	@Nullable
-	public Font createFont(@NonNull String name, @NonNull String path) {
+	public Font loadFont(@NonNull String name, @NonNull String path) {
 		ByteBuffer data = load(path);
 		int handle = nvgCreateFontMem(ctx, name, data, 0);
 		if (handle == -1) return null;

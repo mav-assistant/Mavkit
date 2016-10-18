@@ -17,8 +17,11 @@
 
 package com.unascribed.mavkit;
 
+import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 
 import javax.swing.JOptionPane;
@@ -29,19 +32,44 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import com.sun.jna.Platform;
+import com.unascribed.mavkit.internal.dir.BareDirectories;
+import com.unascribed.mavkit.internal.dir.MacDirectories;
+import com.unascribed.mavkit.internal.dir.WindowsDirectories;
+import com.unascribed.mavkit.internal.dir.XDGDirectories;
 import com.unascribed.mavkit.render.InterfaceRenderer;
 
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
+
 public final class Mavkit {
-	private static Logger log = LoggerFactory.getLogger("Mav");
+	private static Logger log = LoggerFactory.getLogger("Mavkit");
 	
 	private final Display display;
 	private final InterfaceRenderer interfaceRenderer;
 	private final AudioProcessor audioProcessor;
 	
 	private final List<Object> keepAlive = Lists.newArrayList();
+	private final Directories directories;
 	
-	public Mavkit() {
+	public Mavkit(String[] args) {
 		Thread.currentThread().setName("Main thread");
+		OptionParser op = new OptionParser();
+		
+		op.accepts("use-bare-directories", "Force usage of \"bare\" directories, instead of choosing the best provider based on the operating system");
+		OptionSpec<?> help = op.acceptsAll(Arrays.asList("help", "h", "?"), "Display this help").forHelp();
+		
+		OptionSet os = op.parse(args);
+		if (os.has(help)) {
+			try {
+				op.printHelpOn(System.err);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			System.exit(0);
+		}
+		
 		log.info("Starting Mavkit");
 		
 		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
@@ -74,6 +102,28 @@ public final class Mavkit {
 		display = new Display();
 		interfaceRenderer = new InterfaceRenderer();
 		audioProcessor = new AudioProcessor();
+		
+		String appName = I18n.getDefault("application.name");
+		String cleanAppName = appName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "-");
+		
+		if (os.has("use-bare-directories")) {
+			directories = new BareDirectories(cleanAppName);
+			log.info("Using bare directories, as requested");
+		} else {
+			if (Platform.isLinux() || Platform.isX11() || Platform.isSolaris() || Platform.isAIX()) {
+				directories = new XDGDirectories(cleanAppName);
+				log.info("Using XDG directories");
+			} else if (Platform.isMac()) {
+				directories = new MacDirectories(appName.replace('/', '_'));
+				log.info("Using Mac Library directories");
+			} else if (Platform.isWindows()) {
+				directories = new WindowsDirectories(appName.replace('/', '_').replace(" ", ""));
+				log.info("Using Windows directories");
+			} else {
+				directories = new BareDirectories(cleanAppName);
+				log.info("Using bare directories");
+			}
+		}
 	}
 	
 	
@@ -118,6 +168,10 @@ public final class Mavkit {
 	
 	public Display getDisplay() {
 		return display;
+	}
+	
+	public Directories getDirectories() {
+		return directories;
 	}
 	
 	/**

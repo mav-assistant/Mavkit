@@ -61,8 +61,8 @@ public class NoOpCanvas implements Canvas {
 	@Override public void skew(float angleX, float angleY) {}
 	@Override public void scale(float x, float y) {}
 	@Override public @Nullable Image createImage(BufferedImage img, ImageMode... modes) { return null; }
-	@Override public @Nullable Image createImage(File file, ImageMode... modes) { return null; }
-	@Override public @Nullable Image createImage(String path, ImageMode... modes) { return null; }
+	@Override public @Nullable Image loadImage(File file, ImageMode... modes) { return null; }
+	@Override public @Nullable Image loadImage(String path, ImageMode... modes) { return null; }
 	@Override public @Nullable Paint createLinearGradient(float startX, float startY, float endX, float endY, Color start, Color end) { return null; }
 	@Override public @Nullable Paint createBoxGradient(float x, float y, float width, float height, float radius, float feather, Color inner, Color outer) { return null; }
 	@Override public @Nullable Paint createRadialGradient(float centerX, float centerY, float innerRadius, float outerRadius, Color inner, Color outer) { return null; }
@@ -85,7 +85,7 @@ public class NoOpCanvas implements Canvas {
 	@Override public void circle(float centerX, float centerY, float radius) {}
 	@Override public void fill() {}
 	@Override public void stroke() {}
-	@Override public @Nullable Font createFont(String name, String path) { return null; }
+	@Override public @Nullable Font loadFont(String name, String path) { return null; }
 	@Override public @Nullable Font loadFont(String name, File file) { return null; }
 	@Override public @Nullable Font findFont(String name) { return null; }
 	@Override public void textSize(float size) {}

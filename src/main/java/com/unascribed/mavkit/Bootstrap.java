@@ -26,7 +26,7 @@ public class Bootstrap {
 	
 	
 	public static void main(String[] args) {
-		new Mavkit().start();
+		new Mavkit(args).start();
 	}
 	
 }
