@@ -60,7 +60,9 @@ public class XDGDirectories implements Directories {
 	@Override
 	@NonNull
 	public File getPluginHome() {
-		return new File(getDataHome(), "plugins");
+		File f = new File(getDataHome(), "plugins");
+		f.mkdirs();
+		return f;
 	}
 	
 	/**

@@ -37,6 +37,8 @@ import com.unascribed.mavkit.internal.dir.BareDirectories;
 import com.unascribed.mavkit.internal.dir.MacDirectories;
 import com.unascribed.mavkit.internal.dir.WindowsDirectories;
 import com.unascribed.mavkit.internal.dir.XDGDirectories;
+import com.unascribed.mavkit.internal.plugin.SimplePluginDiscoverer;
+import com.unascribed.mavkit.plugin.PluginDiscoverer;
 import com.unascribed.mavkit.render.InterfaceRenderer;
 
 import joptsimple.OptionParser;
@@ -52,6 +54,9 @@ public final class Mavkit {
 	
 	private final List<Object> keepAlive = Lists.newArrayList();
 	private final Directories directories;
+	
+	// TODO make this pluggable
+	private final PluginDiscoverer pluginDiscoverer = new SimplePluginDiscoverer();
 	
 	public Mavkit(String[] args) {
 		Thread.currentThread().setName("Main thread");
@@ -124,12 +129,15 @@ public final class Mavkit {
 				log.info("Using bare directories");
 			}
 		}
+		
 	}
 	
 	
 	// this method is the crossover from non-UI threads to UI threads, so ignore
 	@SuppressWarnings("call.invalid.ui")
 	public void start() {
+		pluginDiscoverer.discover(this);
+		
 		CountDownLatch init = new CountDownLatch(2);
 		
 		new Thread(() -> {

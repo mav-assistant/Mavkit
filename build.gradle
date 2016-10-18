@@ -40,16 +40,18 @@ dependencies {
 	compile "org.lwjgl:lwjgl-platform:${lwjglVersion}:natives-windows"
 	
 	
-	compile 'org.slf4j:slf4j-simple:1.7.13'
+	compile 'org.slf4j:slf4j-api:1.7.13'
 	compile 'com.google.guava:guava:19.0'
 	// we want both of these so that Checker Framework can find Guava's annotations
 	compile "org.checkerframework:checker-qual:2.1.4"
 	compile 'com.google.code.findbugs:jsr305:3.0.1'
 	
 	compile 'org.ow2.asm:asm:5.1'
+	compile 'org.ow2.asm:asm-tree:5.1'
 	compile 'net.sf.jopt-simple:jopt-simple:5.0.3'
 	compile 'net.java.dev.jna:jna:4.2.2'
 	compile 'net.java.dev.jna:jna-platform:4.2.2'
+	compile 'org.joml:joml:1.8.5'
 	
 	checkerFrameworkAnnotatedJDK "org.checkerframework:jdk8:2.1.4"
 
